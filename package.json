@@ -9,7 +9,5 @@
   "workspaces": [
     "packages/*"
   ],
-  "dependencies": {
-    "problem-generator": "^1.0.0"
-  }
+  "dependencies": {}
 }
