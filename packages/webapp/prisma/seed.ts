@@ -1,14 +1,15 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
-async function main() {
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
+
+async function main (): Promise<void> {
   const defaultUser = await prisma.user.upsert({
     where: { email: 'dummy@gmail.com' },
     update: {},
     create: {
       email: 'dummy@gmail.com',
-      userName: 'DefaultDummy',
-    },
-  });
+      userName: 'DefaultDummy'
+    }
+  })
 
   await prisma.category.upsert({
     where: { slug: 'linalg' },
@@ -19,11 +20,11 @@ async function main() {
         create: [
           { name: 'matrix-basic' },
           { name: 'matrix-inversion' },
-          { name: 'matrix-rank' },
-        ],
-      },
-    },
-  });
+          { name: 'matrix-rank' }
+        ]
+      }
+    }
+  })
 
   await prisma.category.upsert({
     where: { slug: 'calculus' },
@@ -33,11 +34,11 @@ async function main() {
       problemGenerators: {
         create: [
           { name: 'integration' },
-          { name: 'single-variable-derivative' },
-        ],
-      },
-    },
-  });
+          { name: 'single-variable-derivative' }
+        ]
+      }
+    }
+  })
 
   await prisma.category.upsert({
     where: { slug: 'algebra' },
@@ -45,25 +46,25 @@ async function main() {
     create: {
       slug: 'algebra',
       problemGenerators: {
-        create: [{ name: 'quadratic-equation' }, { name: 'linear-equation' }],
-      },
-    },
-  });
+        create: [{ name: 'quadratic-equation' }, { name: 'linear-equation' }]
+      }
+    }
+  })
 
-  const allGenIds = (await prisma.problemGenerator.findMany()).map((g) => g.id);
+  const allGenIds = (await prisma.problemGenerator.findMany()).map((g) => g.id)
   await prisma.usersOnProblemGenerators.createMany({
     data: allGenIds.map((id) => ({
       userId: defaultUser.id,
-      problemGeneratorId: id,
-    })),
-  });
+      problemGeneratorId: id
+    }))
+  })
 }
 main()
   .then(async () => {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   })
   .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
+  })

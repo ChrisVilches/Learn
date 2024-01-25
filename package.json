@@ -1,6 +1,13 @@
 {
   "name": "learn",
+  "scripts": {
+    "lint:frontend": "cd packages/frontend && npm run lint",
+    "lint:webapp": "cd packages/webapp && npm run lint",
+    "lint:problem-generator": "cd packages/problem-generator && npm run lint",
+    "lint": "npm run lint:webapp; npm run lint:problem-generator; npm run lint:frontend"
+  },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "devDependencies": {}
 }

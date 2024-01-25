@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma';
-import { User, Prisma, Category, GeneratedProblem } from '@prisma/client';
+import {
+  type User,
+  type Prisma,
+  type Category,
+  type GeneratedProblem,
+} from '@prisma/client';
 import {
   ForbiddenSolveProblem,
   ProblemAlreadyAttempted,
@@ -46,7 +51,9 @@ export class ProblemService {
   }
 
   private async findProblemById(id: number): Promise<GeneratedProblem> {
-    return this.prisma.generatedProblem.findUniqueOrThrow({ where: { id } });
+    return await this.prisma.generatedProblem.findUniqueOrThrow({
+      where: { id },
+    });
   }
 
   private async userAllowedToSolve(
@@ -56,7 +63,10 @@ export class ProblemService {
     return problem.userAssignedId === user.id;
   }
 
-  private async judgePreCheck(user: User, problem: GeneratedProblem) {
+  private async judgePreCheck(
+    user: User,
+    problem: GeneratedProblem,
+  ): Promise<void> {
     const allow = await this.userAllowedToSolve(user, problem);
 
     if (!allow) {
@@ -97,7 +107,10 @@ export class ProblemService {
     return `(ID ${problemId}) Verdict: ${verdict}`;
   }
 
-  private async problemSetVerdict(problem: GeneratedProblem, verdict: boolean) {
+  private async problemSetVerdict(
+    problem: GeneratedProblem,
+    verdict: boolean,
+  ): Promise<void> {
     await this.prisma.generatedProblem.update({
       where: { id: problem.id },
       data: { verdict },

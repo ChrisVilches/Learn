@@ -21,7 +21,9 @@ export class PublicController {
 
   // TODO: This is a fake login.
   @Post('/login')
-  async login(@Body(new ZodPipe(loginSchema)) signInData: { email: string }) {
+  async login(
+    @Body(new ZodPipe(loginSchema)) signInData: { email: string },
+  ): Promise<{ accessToken: string }> {
     const user = await this.userService.findUserByEmail(signInData.email);
 
     if (user === null) {

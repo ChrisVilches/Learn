@@ -1,10 +1,10 @@
-import { PipeTransform } from '@nestjs/common';
-import { ZodSchema } from 'zod';
+import { type PipeTransform } from '@nestjs/common';
+import { type z, type ZodSchema } from 'zod';
 
 export class ZodPipe implements PipeTransform {
-  constructor(private schema: ZodSchema) {}
+  constructor(private readonly schema: ZodSchema) {}
 
-  transform(value: unknown) {
+  transform(value: unknown): z.infer<typeof this.schema> {
     return this.schema.parse(value);
   }
 }

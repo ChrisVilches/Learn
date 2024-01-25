@@ -1,23 +1,23 @@
 import {
   BadRequestException,
-  CallHandler,
-  ExecutionContext,
-  NestInterceptor,
+  type CallHandler,
+  type ExecutionContext,
+  type NestInterceptor,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { Observable, catchError } from 'rxjs';
+import { type Observable, catchError } from 'rxjs';
 import { ZodError } from 'zod';
 import {
   ForbiddenSolveProblem,
   ProblemAlreadyAttempted,
 } from '../../logic/problem-errors';
 
-const handleZodError = ({ errors }: ZodError) => {
+const handleZodError = ({ errors }: ZodError): void => {
   throw new BadRequestException(errors);
 };
 
-const handlePrismaError = (err: PrismaClientKnownRequestError) => {
+const handlePrismaError = (err: PrismaClientKnownRequestError): void => {
   console.log('Handling error');
   if (err.code === 'P2025') {
     throw new NotFoundException();

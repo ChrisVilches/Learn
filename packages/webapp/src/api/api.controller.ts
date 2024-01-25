@@ -26,8 +26,8 @@ import {
 import { ProblemService } from './../logic/services/problem';
 import {
   Category,
-  GeneratedProblem,
-  ProblemGenerator,
+  type GeneratedProblem,
+  type ProblemGenerator,
   User,
 } from '@prisma/client';
 import { CategoryService } from 'src/logic/services/category';
@@ -42,7 +42,7 @@ export class ApiController {
   ) {}
 
   @Get('/me')
-  async me(@CurrentUser() user: User) {
+  async me(@CurrentUser() user: User): Promise<User> {
     return user;
   }
 
@@ -61,41 +61,41 @@ export class ApiController {
   }
 
   @Post('/judge-problem')
-  judgeSolution(
+  async judgeSolution(
     @CurrentUser() user: User,
     @Body(new ZodPipe(problemSolutionSchema))
     { problemId, solution }: ProblemSolution,
-  ) {
-    return this.problemService.judgeProblem(user, problemId, solution);
+  ): Promise<string> {
+    return await this.problemService.judgeProblem(user, problemId, solution);
   }
 
   // TODO: Move these to another controller.
 
   @Get('/categories')
-  getCategories(): Promise<Category[]> {
-    return this.categoryService.fetchAllCategories();
+  async getCategories(): Promise<Category[]> {
+    return await this.categoryService.fetchAllCategories();
   }
 
   @Get('/category/:category_slug/generators')
-  getCategoryGenerators(
+  async getCategoryGenerators(
     @Param('category_slug', CategoryFromSlugPipe) category: Category,
-  ) {
-    return this.categoryService.fetchCategoryGenerators(category);
+  ): Promise<Array<Pick<ProblemGenerator, 'id' | 'name'>>> {
+    return await this.categoryService.fetchCategoryGenerators(category);
   }
 
   @Get('/category/:category_slug/selected-generators')
-  getCategorySelectedGenerators(
+  async getCategorySelectedGenerators(
     @CurrentUser() user: User,
     @Param('category_slug', CategoryFromSlugPipe) category: Category,
-  ) {
-    return this.categoryService.fetchUserGenerators(user, category);
+  ): Promise<Array<Pick<ProblemGenerator, 'id' | 'name'>>> {
+    return await this.categoryService.fetchUserGenerators(user, category);
   }
 
   @Put('/select-generator/:problem_generator_id')
-  addSelectedGenerator(
+  async addSelectedGenerator(
     @CurrentUser() user: User,
     @Param('problem_generator_id', ParseIntPipe) generatorId: number,
   ): Promise<ProblemGenerator> {
-    return this.categoryService.addSelectedGenerator(user, generatorId);
+    return await this.categoryService.addSelectedGenerator(user, generatorId);
   }
 }

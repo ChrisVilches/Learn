@@ -1,14 +1,12 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, type OnModuleInit } from '@nestjs/common';
 import { PrismaService } from './services/prisma';
 import { problemGenerators } from 'problem-generator';
 
 @Injectable()
 export class DataCheck implements OnModuleInit {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  // TODO: There's a false positive here in which I haven't exported all generators from
-  //       the problem-generator module, therefore all are ❎, but I actually forgot to export some.
-  async onModuleInit() {
+  private async checkGeneratorIntegrity(): Promise<void> {
     const dbGenerators = await this.prisma.problemGenerator.findMany();
     const dbNames = new Set(dbGenerators.map((g) => g.name));
     const libNames = new Set(Object.keys(problemGenerators));
@@ -21,5 +19,11 @@ export class DataCheck implements OnModuleInit {
       const icon = ok ? '❎' : '❌';
       console.log(`${icon} ${gen}`);
     }
+  }
+
+  // TODO: There's a false positive here in which I haven't exported all generators from
+  //       the problem-generator module, therefore all are ❎, but I actually forgot to export some.
+  async onModuleInit(): Promise<void> {
+    await this.checkGeneratorIntegrity();
   }
 }
