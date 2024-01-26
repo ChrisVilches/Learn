@@ -1,10 +1,7 @@
 import { Injectable, type PipeTransform } from '@nestjs/common';
-import {
-  type CategorySlug,
-  categorySlugSchema,
-} from '../schemas/category-slug';
 import { type Category } from '@prisma/client';
 import { CategoryService } from 'src/logic/services/category';
+import { z } from 'zod';
 
 @Injectable()
 export class CategoryFromSlugPipe
@@ -13,7 +10,7 @@ export class CategoryFromSlugPipe
   constructor(private readonly categoryService: CategoryService) {}
 
   async transform(value: unknown): Promise<Category> {
-    const categorySlug: CategorySlug = categorySlugSchema.parse(value);
+    const categorySlug: string = z.string().parse(value);
     return await this.categoryService.fetchCategory(categorySlug);
   }
 }

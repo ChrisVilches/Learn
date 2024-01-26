@@ -1,68 +1,60 @@
 import { det, inv } from 'mathjs'
 import { type ProblemGenerator, type Problem } from '../types/problem'
-import { createMatrix, matrixEqual, matrixToTex, parseMatrix } from '../util/matrix'
+import { createMatrix, matrixEqual, matrixToSimpleText, matrixToTex, parseMatrixNumeric } from '../util/matrix'
 import { z } from 'zod'
 import { type SolutionVerdict } from '../types/solution'
-
-interface InvertibleMatrixSolution {
-  type: 'invertible'
-  value: number[][]
-}
-
-type MatrixInversionSolution = InvertibleMatrixSolution | { type: 'non-invertible' }
+import { equalClose } from '../util/misc'
+import { parseMatrixAuto } from '../util/parse'
 
 const problemSchema = z.object({
-  correctAnswer: z.string().transform(parseMatrix),
+  correctAnswer: z.string().transform(parseMatrixNumeric),
   invertible: z.boolean()
 })
 
-// TODO: parseMatrix should throw error, I think. Ensure it happens.
-// TODO: I can parse this with zod as well.
-// TODO: I can parse other solutions with zod as well (other files). But maybe not matrices.
-function parseSolution (s: string): MatrixInversionSolution {
-  if (s === 'non-invertible') {
-    return { type: 'non-invertible' }
-  }
-
-  return {
-    type: 'invertible',
-    value: parseMatrix(s)
-  }
-}
+const solutionSchema = z.literal('non-invertible').or(
+  z.string().transform(parseMatrixAuto)
+)
 
 function isInvertible (A: number[][]): boolean {
-  // TODO: This EPS might be a bit too small. Or no??
-  return Math.abs(det(A)) > 1e-6
+  return !equalClose(det(A), 0)
+}
+
+export function buildMatrixProblem (A: number[][]): Problem {
+  const invertible = isInvertible(A)
+  const correctAnswer = invertible ? inv(A) : null
+
+  return {
+    tex: `${matrixToTex(A)}^{-1}`,
+    debugInformation: matrixToSimpleText(A),
+    content: {
+      correctAnswer: correctAnswer !== null ? matrixToSimpleText(correctAnswer) : '0',
+      invertible
+    }
+  }
 }
 
 export const matrixInversion: ProblemGenerator = {
-  fromDifficulty: function (difficulty: number): Problem | Promise<Problem> {
+  fromDifficulty: function (difficulty: number): Problem {
     const A = createMatrix(2, 2)
-    const invertible = isInvertible(A)
-    const correctAnswer = invertible ? inv(A) : null
-
-    return {
-      tex: `${matrixToTex(A)}^{-1}`,
-      debugInformation: A.toString(),
-      content: {
-        correctAnswer: correctAnswer?.toString(),
-        invertible
-      }
-    }
+    return buildMatrixProblem(A)
   },
   checkSolution: function (givenSolution: string, { invertible, correctAnswer }: z.infer<typeof problemSchema>): SolutionVerdict {
-    const solution = parseSolution(givenSolution)
+    const solution = solutionSchema.parse(givenSolution)
 
-    if (solution.type === 'non-invertible' && !invertible) {
-      return 'ok'
+    if (solution === 'non-invertible') {
+      return invertible ? 'incorrect' : 'ok'
     }
 
-    if (solution.type === 'invertible' && invertible && matrixEqual(solution.value, correctAnswer ?? [])) {
+    if (invertible && matrixEqual(solution, correctAnswer ?? [])) {
       return 'ok'
     }
 
     return 'incorrect'
   },
-
+  freeInput: true,
+  choiceAnswers: [{
+    label: 'Non-invertible',
+    result: 'non-invertible'
+  }],
   problemContentParser: problemSchema
 }

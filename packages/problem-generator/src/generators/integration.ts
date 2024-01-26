@@ -9,17 +9,15 @@ const problemSchema = z.object({
 
 export const integration: ProblemGenerator = {
   fromDifficulty: async function (difficulty: number): Promise<Problem> {
-    return integrationProblemFromResultExpression(createPolynomial(3))
+    return integrationProblemFromResultExpression(createPolynomial(3, { omitDegrees: [0] }))
   },
 
   checkSolution: (givenSolution: string, { correctAnswer }: z.infer<typeof problemSchema>) => {
-    // TODO: For some reason it doesn't work in the CLI app. Test later on the React app
-    // The reason is that sometimes the result polynomial has a constant value which
-    // shouldn't be in the solution. Polynomials have to be generated without that
-    // last coefficient, and then it'd work.
-
     return checkProblemSolutionSymbolicOrValues(givenSolution, correctAnswer, { c: 0, C: 0 })
   },
+
+  freeInput: true,
+  choiceAnswers: [],
 
   problemContentParser: problemSchema
 }

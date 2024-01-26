@@ -1,5 +1,5 @@
 import { complex, parse } from 'mathjs'
-import { equalClose, testMultipleValues } from './misc'
+import { camelToKebab, equalClose, objectKebabKeys, testMultipleValues } from './misc'
 
 test(equalClose.name, () => {
   expect(equalClose(3, 4)).toBe(false)
@@ -17,4 +17,16 @@ test(testMultipleValues.name, () => {
   expect(testMultipleValues(parse('sqrt(x)'), parse('x^0.25'))).toBe(false)
   expect(testMultipleValues(parse('log(x) + 2x + 5'), parse('7 - 2 + log(x)/2 + log(x)/2 + x + x'))).toBe(true)
   expect(testMultipleValues(parse('x'), parse('abs(x)'), {}, [0, 2, 3, 4, 5])).toBe(true)
+})
+
+test(camelToKebab.name, () => {
+  expect(camelToKebab('helloWorld')).toBe('hello-world')
+  expect(camelToKebab('HELLO')).toBe('h-e-l-l-o')
+  expect(camelToKebab('HelloWorld')).toBe('hello-world')
+  expect(camelToKebab('byeHelloWorld')).toBe('bye-hello-world')
+})
+
+test(objectKebabKeys.name, () => {
+  expect(objectKebabKeys({ helloWorld: 0, someKey: 1 })).toStrictEqual({ 'hello-world': 0, 'some-key': 1 })
+  expect(objectKebabKeys({})).toStrictEqual({})
 })

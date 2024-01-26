@@ -2,8 +2,9 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '../public/vite.svg'
 import './App.css'
+import { Login } from './components/login-form'
 
-function App () {
+function App (): JSX.Element {
   const [count, setCount] = useState(0)
 
   return (
@@ -12,6 +13,7 @@ function App () {
         <h1 className="text-3xl font-bold">
           Hello world!
         </h1>
+        <Login/>
         <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>

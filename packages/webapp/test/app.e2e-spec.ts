@@ -3,7 +3,7 @@ import { type INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ApiModule } from './../src/api/api.module';
 
-describe('ApiController (e2e)', () => {
+describe('ProblemController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {

@@ -5,11 +5,11 @@ import {
   UnauthorizedException,
   UseInterceptors,
 } from '@nestjs/common';
-import { loginSchema } from './schemas/login';
-import { ZodPipe } from './pipes/zod';
+import { loginSchema } from '../schemas/login';
+import { ZodPipe } from '../pipes/zod';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/logic/services/user';
-import { ErrorMappingInterceptor } from './interceptors/error-mapping';
+import { ErrorMappingInterceptor } from '../interceptors/error-mapping';
 
 @Controller()
 @UseInterceptors(new ErrorMappingInterceptor())

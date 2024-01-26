@@ -1,6 +1,6 @@
 import { type Matrix, add, matrix, multiply, subtract } from 'mathjs'
 import { type ProblemGenerator, type Problem } from '../types/problem'
-import { createMatrix, matrixEqual, matrixToTex, parseMatrix } from '../util/matrix'
+import { createMatrix, matrixEqual, matrixToSimpleText, matrixToTex, parseMatrixNumeric } from '../util/matrix'
 import { arraySample } from '../util/random'
 import { z } from 'zod'
 
@@ -19,34 +19,35 @@ function computeResult (matrix1: number[][], matrix2: number[][], op: BinaryMatr
 }
 
 const problemSchema = z.object({
-  correctAnswer: z.string().transform(parseMatrix)
+  correctAnswer: z.string().transform(parseMatrixNumeric)
 })
 
+export function buildMatrixProblem (A: number[][], B: number[][], op: BinaryMatrixOperator): Problem {
+  const correctAnswer: number[][] = computeResult(A, B, op).toJSON().data
+  const opFormat = op === '*' ? '' : ` ${op} `
+
+  return {
+    tex: `${matrixToTex(A)}${opFormat}${matrixToTex(B)}`,
+    debugInformation: `A ${op} B`,
+    content: {
+      correctAnswer: matrixToSimpleText(correctAnswer)
+    }
+  }
+}
+
 export const matrixBasic: ProblemGenerator = {
-  fromDifficulty: async function (difficulty: number): Promise<Problem> {
+  fromDifficulty: function (difficulty: number): Problem {
     // TODO: Note, when matrix is multiplied, dimensions have to be specified carefully.
     const A = createMatrix(2, 2)
     const B = createMatrix(2, 2)
     const op = arraySample(binaryMatrixOperator)
-
-    // TODO: I should compute the correct answer using the MathJS functions.
-    // TODO: This is trash:
-    const correctAnswer: number[][] = computeResult(A, B, op).toJSON().data
-
-    const opFormat = op === '*' ? '' : ` ${op} `
-
-    return {
-      tex: `${matrixToTex(A)}${opFormat}${matrixToTex(B)}`,
-      debugInformation: `A ${op} B`, // TODO: a bit too simple.
-      content: {
-        // TODO: Does this work?
-        correctAnswer: correctAnswer.toString()
-      }
-    }
+    return buildMatrixProblem(A, B, op)
   },
-
+  freeInput: true,
+  choiceAnswers: [],
   checkSolution: (givenSolution: string, { correctAnswer }: z.infer<typeof problemSchema>) => {
-    const givenMatrix = parseMatrix(givenSolution)
+    const givenMatrix = parseMatrixNumeric(givenSolution)
+
     if (matrixEqual(givenMatrix, correctAnswer)) {
       return 'ok'
     }

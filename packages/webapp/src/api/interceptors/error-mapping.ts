@@ -12,13 +12,15 @@ import {
   ForbiddenSolveProblem,
   ProblemAlreadyAttempted,
 } from '../../logic/problem-errors';
+import { SolutionParseError } from 'problem-generator';
 
+// TODO: Note that this can also be errors from the problem generator parsing (problem-generator module),
+//       so sometimes it may leak keys like "correctAnswer" to the client, which shouldn't happen!!
 const handleZodError = ({ errors }: ZodError): void => {
   throw new BadRequestException(errors);
 };
 
 const handlePrismaError = (err: PrismaClientKnownRequestError): void => {
-  console.log('Handling error');
   if (err.code === 'P2025') {
     throw new NotFoundException();
   }
@@ -36,15 +38,15 @@ export class ErrorMappingInterceptor implements NestInterceptor {
           handlePrismaError(err);
         }
 
-        // TODO: I should create a class like PrismaClientKnownRequestError and just set some error codes
-        //       Then just type one "handleBusinessLogicError" and handle them somewhere else.
-        //       That way I can keep this mapper lean, and divide code.
-
         if (
           err instanceof ForbiddenSolveProblem ||
           err instanceof ProblemAlreadyAttempted
         ) {
           throw new BadRequestException(err.message);
+        }
+
+        if (err instanceof SolutionParseError) {
+          throw new BadRequestException('Cannot parse solution');
         }
 
         throw err;

@@ -6,8 +6,18 @@ export interface Problem {
   debugInformation: string
 }
 
-export interface ProblemGenerator {
+interface ChoiceAnswer {
+  label: string
+  result: string
+}
+
+export interface ProblemSolutionOptions {
+  freeInput: boolean
+  choiceAnswers: ChoiceAnswer[]
+}
+
+export type ProblemGenerator = {
   fromDifficulty: (difficulty: number) => Problem | Promise<Problem>
   checkSolution: (givenSolution: string, problemContent: any) => SolutionVerdict
   problemContentParser: { parse: (data: unknown) => any }
-}
+} & ProblemSolutionOptions

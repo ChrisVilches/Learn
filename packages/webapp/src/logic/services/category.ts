@@ -5,7 +5,14 @@ import {
   type Category,
   type ProblemGenerator,
 } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { arraySample } from 'src/util/misc';
+
+export type ProblemGeneratorWithEnabled = Pick<
+  ProblemGenerator,
+  'id' | 'name'
+> & {
+  enabled: boolean;
+};
 
 @Injectable()
 export class CategoryService {
@@ -14,12 +21,11 @@ export class CategoryService {
   async fetchUserGenerators(
     user: User,
     category: Category,
-  ): Promise<Array<Pick<ProblemGenerator, 'id' | 'name'>>> {
-    return await this.prisma.problemGenerator.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
+  ): Promise<ProblemGeneratorWithEnabled[]> {
+    const all = await this.fetchCategoryGenerators(category);
+
+    const enabled = await this.prisma.problemGenerator.findMany({
+      select: { id: true },
       where: {
         categoryId: category.id,
         users: {
@@ -29,23 +35,27 @@ export class CategoryService {
         },
       },
     });
+
+    const enabledIds = new Set(enabled.map((g) => g.id));
+
+    return all.map((g) => ({ ...g, enabled: enabledIds.has(g.id) }));
   }
 
   async pickRandomSelectedGenerator(
     user: User,
     category: Category,
-  ): Promise<Pick<ProblemGenerator, 'id' | 'name'>> {
-    const all = await this.fetchUserGenerators(user, category);
-    // TODO: annoying boilerplate for a simple array sample code.
-    const idx = Math.floor(Math.random() * all.length);
-    // TODO: Remove this.
-    if (idx === undefined || idx === null || typeof idx === 'undefined') {
-      throw new Error('BAD INDEX!!!');
+  ): Promise<ProblemGeneratorWithEnabled> {
+    const generators = await this.fetchUserGenerators(user, category);
+    const enabled = generators.filter((g) => g.enabled);
+
+    if (enabled.length > 0) {
+      return arraySample(enabled);
+    } else {
+      return arraySample(generators);
     }
-    return all[idx];
   }
 
-  async fetchCategoryGenerators(
+  private async fetchCategoryGenerators(
     category: Category,
   ): Promise<Array<Pick<ProblemGenerator, 'id' | 'name'>>> {
     return await this.prisma.problemGenerator.findMany({
@@ -54,33 +64,41 @@ export class CategoryService {
     });
   }
 
-  async addSelectedGenerator(
+  async toggleEnabledGenerator(
     user: User,
     generatorId: number,
-  ): Promise<ProblemGenerator> {
+    enable: boolean,
+  ): Promise<ProblemGeneratorWithEnabled> {
     const generator = await this.prisma.problemGenerator.findUniqueOrThrow({
+      select: { id: true, name: true },
       where: { id: generatorId },
     });
 
-    try {
-      await this.prisma.usersOnProblemGenerators.create({
-        data: {
+    if (enable) {
+      await this.prisma.usersOnProblemGenerators.upsert({
+        where: {
+          userId_problemGeneratorId: {
+            userId: user.id,
+            problemGeneratorId: generatorId,
+          },
+        },
+        update: {},
+        create: {
           user: { connect: { id: user.id } },
           problemGenerator: { connect: { id: generatorId } },
         },
       });
-    } catch (e) {
-      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2002') {
-        return generator;
-      }
-
-      throw e;
+    } else {
+      await this.prisma.usersOnProblemGenerators.deleteMany({
+        where: {
+          userId: user.id,
+          problemGeneratorId: generatorId,
+        },
+      });
     }
 
-    return generator;
+    return { ...generator, enabled: enable };
   }
-
-  // TODO: Unselect generator service and controller
 
   async fetchAllCategories(): Promise<Category[]> {
     return await this.prisma.category.findMany();

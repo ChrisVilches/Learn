@@ -12,6 +12,8 @@ import {
 } from '../problem-errors';
 import { CategoryService } from './category';
 import { problemGenerators } from 'problem-generator';
+import { SolutionVerdict } from 'problem-generator/dist/types/solution';
+import { ProblemSolutionOptions } from 'problem-generator';
 
 @Injectable()
 export class ProblemService {
@@ -24,19 +26,18 @@ export class ProblemService {
     user: User,
     difficulty: number,
     category: Category,
-  ): Promise<GeneratedProblem> {
-    // TODO: What happens where there's no generator selected?
-    const generator = await this.categoryService.pickRandomSelectedGenerator(
+  ): Promise<GeneratedProblem & ProblemSolutionOptions> {
+    const { id, name } = await this.categoryService.pickRandomSelectedGenerator(
       user,
       category,
     );
-
+    const gen = problemGenerators[name];
     const { tex, debugInformation, content } =
-      await problemGenerators[generator.name].fromDifficulty(difficulty);
+      await gen.fromDifficulty(difficulty);
 
     const data: Prisma.GeneratedProblemCreateInput = {
       difficulty,
-      problemGenerator: { connect: generator },
+      problemGenerator: { connect: { id, name } },
       tex,
       debugInformation,
       userAssigned: { connect: user },
@@ -44,10 +45,17 @@ export class ProblemService {
       content,
     };
 
-    return await this.prisma.generatedProblem.create({
+    const generatedProblem = await this.prisma.generatedProblem.create({
       data,
       include: { problemGenerator: { select: { id: true, name: true } } },
     });
+
+    const problemSolutionOptions = {
+      freeInput: gen.freeInput,
+      choiceAnswers: gen.choiceAnswers,
+    };
+
+    return { ...generatedProblem, ...problemSolutionOptions };
   }
 
   private async findProblemById(id: number): Promise<GeneratedProblem> {
@@ -82,7 +90,7 @@ export class ProblemService {
     user: User,
     problemId: number,
     problemSolution: string,
-  ): Promise<string> {
+  ): Promise<SolutionVerdict> {
     const problem = await this.findProblemById(problemId);
     const generator = await this.prisma.problemGenerator.findUniqueOrThrow({
       where: {
@@ -95,16 +103,13 @@ export class ProblemService {
     const { checkSolution, problemContentParser } =
       problemGenerators[generator.name];
 
-    // TODO: If verdict is "cannot-parse" (which right now isn't very well tested)
-    //       then it should skipping setting the verdict, since the user should be able
-    //       to try again.
     const verdict = checkSolution(
       problemSolution,
       problemContentParser.parse(problem.content),
     );
 
     await this.problemSetVerdict(problem, verdict === 'ok');
-    return `(ID ${problemId}) Verdict: ${verdict}`;
+    return verdict;
   }
 
   private async problemSetVerdict(

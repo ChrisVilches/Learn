@@ -1,9 +1,10 @@
 import { parse } from 'mathjs'
 import { type ProblemGenerator, type Problem } from '../types/problem'
 import { randInt } from '../util/random'
-import { equalClose, parseComplexNumbers } from '../util/misc'
-import { isSolution, parabolaHasRepeatedSolutions } from '../util/equations'
+import { equalClose } from '../util/misc'
+import { isFunctionLinear, isSolution, parabolaHasRepeatedSolutions } from '../util/equations'
 import { z } from 'zod'
+import { parseComplexNumbers } from '../util/parse'
 
 // TODO: This doesn't work properly. It still multiplies by 1 xd
 function ensureSign (x: number): string {
@@ -23,19 +24,19 @@ const problemSchema = z.object({
   equation: z.string().transform(s => parse(s))
 })
 
-// TODO: I don't know where these TODOs belong to.
-// TODO: How to check when a linear equation has no solution????
-//       Maybe I should just generate the equation using my own methods (not math.js)
-// TODO: Constructor has to be expanded. Add "Standard Form" and "Factored Form", and create
-//       constructor that uses the difficulty value.
 export function quadraticEquationProblemFromVertex (a: number, h: number, k: number): Problem {
-  if (a === 0) {
-    // TODO: Is this rule OK? Remember that this is the vertex form, not the standard form,
-    //       so maybe it's different. (In standard form, it also cannot be 0)
-    throw new Error('Parameter a cannot be 0')
-  }
   // TODO: The display of the statement is a bit buggy (e.g. multiplication by 1)
   const equation = parse(`${(ensureSign(a))} (x${ensureSign(-h)})^2 ${ensureSign(k)}`)
+
+  const compiled = equation.compile()
+
+  // TODO: This never throws, but the reason is because the 0 gets removed by the `ensureSign`,
+  //       which is buggy anyway. So this will throw one day.
+  //       Equations have to be built by avoiding making them linear.
+  //       Also, all generation methods have to test this, and avoid creating linear equations.
+  if (isFunctionLinear((x: number) => compiled.evaluate({ x }))) {
+    throw new Error('Quadratic equation ended up being linear')
+  }
 
   return {
     tex: `f(x) = ${equation.toTex()}`,
@@ -52,16 +53,16 @@ function ensureAtLeastTwo<T> (arr: T[]): T[] {
   return arr
 }
 
+const convertZeroToOne = (value: number): number => value === 0 ? 1 : value
+
 export const quadraticEquation: ProblemGenerator = {
   fromDifficulty: (difficulty: number) => {
-    const a = randInt(-5, 5) // TODO: This cannot be 0!!!!
-    const h = randInt(-5, 5) // TODO: Maybe other numbers also cannot be zero? Check
+    const a = convertZeroToOne(randInt(-5, 5))
+    const h = randInt(-5, 5)
     const k = randInt(-5, 5)
     return quadraticEquationProblemFromVertex(a, h, k)
   },
   checkSolution: (givenSolution: string, { equation, solutionsRepeated }: z.infer<typeof problemSchema>) => {
-    // TODO: This should throw parse error.
-    //       Hopefully make the UI have two inputs.
     const solutions = ensureAtLeastTwo(parseComplexNumbers(givenSolution))
 
     if (solutions.length !== 2) return 'incorrect'
@@ -79,5 +80,7 @@ export const quadraticEquation: ProblemGenerator = {
     return 'incorrect'
   },
 
+  freeInput: true,
+  choiceAnswers: [],
   problemContentParser: problemSchema
 }

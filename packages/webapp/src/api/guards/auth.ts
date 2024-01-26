@@ -8,6 +8,7 @@ import { type User } from '@prisma/client';
 import { UserService } from '../../logic/services/user';
 import { JwtService } from '@nestjs/jwt';
 import { z } from 'zod';
+import { IncomingMessage } from 'http';
 
 const payloadSchema = z.object({ email: z.string().email() });
 
@@ -19,7 +20,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
+    const request = context.switchToHttp().getRequest<IncomingMessage>();
 
     try {
       const token = this.extractTokenFromHeader(request);
@@ -41,9 +42,8 @@ export class AuthGuard implements CanActivate {
     return user;
   }
 
-  private extractTokenFromHeader(request: Request): string {
-    const [type, token] =
-      request.headers.get('authorization')?.split(' ') ?? [];
+  private extractTokenFromHeader(request: IncomingMessage): string {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
     if (type !== 'Bearer') {
       throw new UnauthorizedException();
     }

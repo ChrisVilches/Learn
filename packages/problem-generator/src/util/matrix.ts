@@ -1,7 +1,7 @@
-import { type Matrix, evaluate } from 'mathjs'
 import { SolutionParseError } from '../types/errors'
 import { randInt } from './random'
-import { parseNumberOrThrow } from './misc'
+import { equalClose } from './misc'
+import { parseNumberOrThrow } from './parse'
 
 export function createMatrix (n: number, m: number, fn?: () => number): number[][] {
   fn ??= () => randInt(-5, 5)
@@ -19,34 +19,17 @@ export function createMatrix (n: number, m: number, fn?: () => number): number[]
 }
 
 export function matrixToTex (matrix: number[][]): string {
-  let result = ''
-
-  // TODO: Make it more functional style.
-  for (let i = 0; i < matrix.length; i++) {
-    for (let j = 0; j < matrix[i].length; j++) {
-      if (j !== 0) result += ' & '
-      result += matrix[i][j]
-    }
-    // TODO: a trailing one is being added. Not very good but works probably???
-    result += '\\\\'
-  }
-
+  const result = matrix.map(row => row.join(' & ')).join('\\\\')
   return `\\begin{pmatrix}${result}\\end{pmatrix}`
 }
 
-// TODO: This function is dangerous. It may not evaluate to a matrix.
-//       I think I have to do a second check myself.
-function parseMatrixMathJS (matrix: string): Matrix {
-  return evaluate(matrix)
+export function matrixToSimpleText (matrix: number[][]): string {
+  return matrix.map(row => row.join(' ')).join('\n')
 }
 
 const oneOrMultipleSpaces = /\s+/
 
-export function parseMatrix (matrix: string): number[][] {
-  if (matrix.includes('[')) {
-    return parseMatrixMathJS(matrix).toJSON().data
-  }
-
+export function parseMatrixNumeric (matrix: string): number[][] {
   matrix = matrix.trim()
   const rows = matrix.split('\n')
   const result: number[][] = []
@@ -65,23 +48,16 @@ export function parseMatrix (matrix: string): number[][] {
   return result
 }
 
-// TODO: Too long
-export function matrixEqual (matrix1: number[][], matrix2: number[][], eps = 0): boolean {
-  if (matrix1.length !== matrix2.length) {
-    return false
-  }
+export function matrixEqual (matrix1: number[][], matrix2: number[][]): boolean {
+  if (matrix1.length !== matrix2.length) return false
 
   for (let i = 0; i < matrix1.length; i++) {
-    if (matrix1[i].length !== matrix2[i].length) {
-      return false
-    }
+    if (matrix1[i].length !== matrix2[i].length) return false
 
     for (let j = 0; j < matrix1[i].length; j++) {
-      const diff = matrix1[i][j] - matrix2[i][j]
-      if (Math.abs(diff) > eps) {
-        return false
-      }
+      if (!equalClose(matrix1[i][j], matrix2[i][j])) return false
     }
   }
+
   return true
 }
