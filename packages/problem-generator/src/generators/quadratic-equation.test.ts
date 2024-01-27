@@ -37,13 +37,10 @@ describe('checkSolution', () => {
   })
 
   test('bad syntax', () => {
-    // TODO: With the `if (s.trim().length === 0) {` etc in parseMathOrThrow
-    //       some of these tests should throw SolutionParseError. WHy doesn't it do it?
-    //       Maybe I should delete that line if it has no effect. But first research why.
-    expect(checkSolutionFromVertex(1, 2, 1, '  ')).toBe('incorrect')
-    expect(checkSolutionFromVertex(1, 2, 1, ' , , , ')).toBe('incorrect')
+    expect(() => checkSolutionFromVertex(1, 2, 1, '  ')).toThrow(SolutionParseError)
+    expect(() => checkSolutionFromVertex(1, 2, 1, ' , , , ')).toThrow(SolutionParseError)
     expect(checkSolutionFromVertex(1, 2, 1, '1, 2, 3, 4, 5')).toBe('incorrect')
     expect(() => checkSolutionFromVertex(1, 2, 1, 'a, b')).toThrow(SolutionParseError)
-    expect(checkSolutionFromVertex(1, 2, 1, ' , ')).toBe('incorrect')
+    expect(() => checkSolutionFromVertex(1, 2, 1, ' , ')).toThrow(SolutionParseError)
   })
 })

@@ -1,10 +1,8 @@
-import { SolutionParseError } from '../types/errors'
-import { randInt } from './random'
+import _ from 'lodash'
 import { equalClose } from './misc'
-import { parseNumberOrThrow } from './parse'
 
 export function createMatrix (n: number, m: number, fn?: () => number): number[][] {
-  fn ??= () => randInt(-5, 5)
+  fn ??= () => _.random(-5, 5)
   const result: number[][] = []
 
   for (let i = 0; i < n; i++) {
@@ -23,31 +21,6 @@ export function matrixToTex (matrix: number[][]): string {
   return `\\begin{pmatrix}${result}\\end{pmatrix}`
 }
 
-export function matrixToSimpleText (matrix: number[][]): string {
-  return matrix.map(row => row.join(' ')).join('\n')
-}
-
-const oneOrMultipleSpaces = /\s+/
-
-export function parseMatrixNumeric (matrix: string): number[][] {
-  matrix = matrix.trim()
-  const rows = matrix.split('\n')
-  const result: number[][] = []
-  let m: number | null = null
-
-  for (const row of rows) {
-    const cells = row.split(oneOrMultipleSpaces)
-    m ??= cells.length
-    if (cells.length !== m) {
-      throw new SolutionParseError('Matrix column count does not match')
-    }
-
-    result.push(cells.map(parseNumberOrThrow))
-  }
-
-  return result
-}
-
 export function matrixEqual (matrix1: number[][], matrix2: number[][]): boolean {
   if (matrix1.length !== matrix2.length) return false
 
@@ -60,4 +33,14 @@ export function matrixEqual (matrix1: number[][], matrix2: number[][]): boolean 
   }
 
   return true
+}
+
+export function rowLinearCombination (matrix: number[][], row0: number, row1: number, factor?: number): number[] {
+  const result = [...matrix[row0]]
+  factor ??= _.random(-2, 2)
+  for (let i = 0; i < matrix[row0].length; i++) {
+    result[i] += factor * matrix[row1][i]
+  }
+
+  return result
 }

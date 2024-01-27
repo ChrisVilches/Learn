@@ -24,7 +24,7 @@ import {
 import { ProblemService } from '../../logic/services/problem';
 import { Category, type GeneratedProblem, User } from '@prisma/client';
 import { SolutionVerdict } from 'problem-generator/dist/types/solution';
-import { ProblemSolutionOptions } from 'problem-generator';
+import { ProblemSolutionOptions } from 'problem-generator/dist/types/problem';
 
 @Controller()
 @UseGuards(AuthGuard)

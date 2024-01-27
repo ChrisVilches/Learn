@@ -1,7 +1,5 @@
-import { type MathNode, simplify, type EvalFunction, type Complex, OperatorNode, complex } from 'mathjs'
+import { type MathNode, simplify, type Complex, OperatorNode } from 'mathjs'
 import { SolutionParseError } from '../types/errors'
-import { randInt } from './random'
-import { type SolutionVerdict } from '../types/solution'
 import { parseMathOrThrow } from './parse'
 
 function createSequenceNumbers (length: number, low = -1000, high = 1000): number[] {
@@ -13,128 +11,58 @@ function createSequenceNumbers (length: number, low = -1000, high = 1000): numbe
   return result
 }
 
-// TODO: I think this doesn't validate if the result will be a proper number
-function evaluateOrThrow (fn: EvalFunction, args: Record<string, number>): number {
-  try {
-    return fn.evaluate(args)
-  } catch {
-    // TODO: Isn't this error wrong???
-    throw new SolutionParseError('Cannot evaluate expression')
-  }
-}
-
-// TODO: I don't understand the purpose of this function.
-export function evaluateComplexOrThrow (fn: EvalFunction): Complex {
-  try {
-    return fn.evaluate({ i: complex('i') })
-  } catch {
-    throw new SolutionParseError('Cannot evaluate expression')
-  }
-}
-
 export function isComplex (value: unknown): value is Complex {
   return typeof value === 'object' && value !== null && 're' in value && 'im' in value
 }
 
-export function equalClose <T = number | Complex> (a: T, b: T, eps = 1e-6): boolean {
+type ComparableNumber = number | { re: number, im: number }
+
+export function equalClose (a: ComparableNumber, b: ComparableNumber, eps = 1e-6): boolean {
+  if (a === Infinity && b === Infinity) return true
+  if (a === -Infinity && b === -Infinity) return true
+
   if (typeof a === 'number' && typeof b === 'number') {
+    if (isNaN(a) && isNaN(b)) return true
+    if (isNaN(a) !== isNaN(b)) return false
     return Math.abs(a - b) < eps
   }
 
-  if (isComplex(a) && isComplex(b)) {
-    return equalClose(a.re, b.re, eps) && equalClose(a.im, b.im, eps)
-  }
+  const z0 = isComplex(a) ? a : { re: a, im: 0 }
+  const z1 = isComplex(b) ? b : { re: b, im: 0 }
 
-  throw new Error('Bad arguments')
+  return equalClose(z0.re, z1.re, eps) && equalClose(z0.im, z1.im, eps)
 }
 
-export function testMultipleValues (exp1: MathNode, exp2: MathNode, args?: Record<string, number>, values?: number[]): boolean {
+export function symbolicEqual (exp1: MathNode | string, exp2: MathNode | string): boolean {
+  const a = typeof exp1 === 'string' ? parseMathOrThrow(exp1) : exp1
+  const b = typeof exp2 === 'string' ? parseMathOrThrow(exp2) : exp2
+  return simplify(a).equals(simplify(b))
+}
+
+export function multipleEvalEqual (exp1: MathNode | string, exp2: MathNode | string, args?: Record<string, number>, values?: number[]): boolean {
+  const a = typeof exp1 === 'string' ? parseMathOrThrow(exp1) : exp1
+  const b = typeof exp2 === 'string' ? parseMathOrThrow(exp2) : exp2
+
   values ??= createSequenceNumbers(100, -2000, 2000)
 
   args ??= {}
 
-  const compiled1 = exp1.compile()
-  const compiled2 = exp2.compile()
+  const compiled1 = a.compile()
+  const compiled2 = b.compile()
 
-  for (const x of values) {
-    const result1 = evaluateOrThrow(compiled1, Object.assign(args, { x }))
-    const result2 = evaluateOrThrow(compiled2, Object.assign(args, { x }))
+  try {
+    for (const x of values) {
+      const opts = Object.assign(args, { x })
+      const result1 = compiled1.evaluate(opts) as ComparableNumber
+      const result2 = compiled2.evaluate(opts) as ComparableNumber
 
-    if (equalClose(result1, result2)) {
-      return false
+      if (!equalClose(result1, result2)) return false
     }
+  } catch (e) {
+    throw new SolutionParseError()
   }
 
   return true
-}
-
-// TODO: I think I should change the name.
-//       Simply change it to something like "are two equations equal, tested using many values"
-//       Then it can be moved to "equations" I guess.
-//       I guess the problem is the "OR" in the name. It does perform a symbolic check first
-//       so I guess I could divide the methods and then join both into another function.
-export function checkProblemSolutionSymbolicOrValues (givenSolution: string, simplifiedCorrectAnswer: MathNode, evalArgs?: Record<string, number>): SolutionVerdict {
-  const parsed = parseMathOrThrow(givenSolution)
-
-  if (simplify(parsed).equals(simplifiedCorrectAnswer)) {
-    return 'ok'
-  }
-
-  if (testMultipleValues(parsed, simplifiedCorrectAnswer, evalArgs)) {
-    return 'ok'
-  }
-
-  return 'incorrect'
-}
-
-interface CreatePolynomialOptions {
-  omitDegrees?: number[]
-}
-
-// TODO: Create a function that takes a math node and shuffles it to make it harder to understand.
-
-// TODO: It'd be nice to create a polynomial using math.js builder methods.
-//       https://mathjs.org/docs/reference/functions/chain.html
-// TODO: This function can be tested by passing coefficients as array, and if it's undefined, generate it using
-//       random numbers in the function body.
-// TODO: This function is huge.
-export function createPolynomial (degree: number, { omitDegrees }: CreatePolynomialOptions = {}): string {
-  let result = ''
-  const omitDegreesSet = new Set(omitDegrees)
-
-  for (let i = degree; i >= 0; i--) {
-    if (omitDegreesSet.has(i)) continue
-
-    const coef = randInt(-5, 5)
-    if (coef === 0) {
-      continue
-    }
-
-    const sign = result.length === 0 ? '' : (coef < 0 ? '-' : '+')
-    result += sign
-
-    if (Math.abs(coef) !== 1) {
-      result += Math.abs(coef)
-    }
-
-    if (i === 0) break
-
-    result += 'x'
-
-    if (i !== 1) {
-      result += `^${i}`
-    }
-  }
-
-  if (result.endsWith('-') || result.endsWith('+')) {
-    return result.substring(0, result.length - 1)
-  }
-
-  if (result.length === 0) {
-    return '0'
-  }
-
-  return result
 }
 
 export function implicitMultiplication (root: MathNode): MathNode {

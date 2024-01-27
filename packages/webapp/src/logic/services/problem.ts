@@ -13,7 +13,7 @@ import {
 import { CategoryService } from './category';
 import { problemGenerators } from 'problem-generator';
 import { SolutionVerdict } from 'problem-generator/dist/types/solution';
-import { ProblemSolutionOptions } from 'problem-generator';
+import { ProblemSolutionOptions } from 'problem-generator/dist/types/problem';
 
 @Injectable()
 export class ProblemService {

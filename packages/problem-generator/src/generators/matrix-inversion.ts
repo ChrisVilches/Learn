@@ -1,13 +1,13 @@
 import { det, inv } from 'mathjs'
 import { type ProblemGenerator, type Problem } from '../types/problem'
-import { createMatrix, matrixEqual, matrixToSimpleText, matrixToTex, parseMatrixNumeric } from '../util/matrix'
+import { createMatrix, matrixEqual, matrixToTex } from '../util/matrix'
 import { z } from 'zod'
 import { type SolutionVerdict } from '../types/solution'
 import { equalClose } from '../util/misc'
 import { parseMatrixAuto } from '../util/parse'
 
 const problemSchema = z.object({
-  correctAnswer: z.string().transform(parseMatrixNumeric),
+  correctAnswer: z.string().transform(m => JSON.parse(m)).pipe(z.array(z.array(z.number()))),
   invertible: z.boolean()
 })
 
@@ -25,9 +25,9 @@ export function buildMatrixProblem (A: number[][]): Problem {
 
   return {
     tex: `${matrixToTex(A)}^{-1}`,
-    debugInformation: matrixToSimpleText(A),
+    debugInformation: JSON.stringify(A),
     content: {
-      correctAnswer: correctAnswer !== null ? matrixToSimpleText(correctAnswer) : '0',
+      correctAnswer: correctAnswer !== null ? JSON.stringify(correctAnswer) : '[[0]]',
       invertible
     }
   }

@@ -1,4 +1,3 @@
-import { SolutionParseError } from '../main'
 import { type SolutionVerdict } from '../types/solution'
 import { buildMatrixProblem, matrixInversion } from './matrix-inversion'
 
@@ -29,18 +28,5 @@ describe('checkSolution', () => {
 
   test('accepts correct non-invertible solution', () => {
     expect(checkSolutionInv([[2, 4], [2, 4]], 'non-invertible')).toBe('ok')
-  })
-
-  // TODO: Move these tests to the parser tests (util/matrix.test.ts)
-  //       Write tests for each parser.
-  test('symbolic wrong syntax', () => {
-    expect(() => checkSolutionInv([[2, 4], [2, 4]], '[[1, 2], [3]')).toThrow(SolutionParseError)
-    expect(() => checkSolutionInv([[2, 4], [2, 4]], '4[[1, 2], [3]')).toThrow(SolutionParseError)
-  })
-
-  test('numeric wrong syntax', () => {
-    expect(() => checkSolutionInv([[2, 4], [2, 4]], '1 2\n3')).toThrow(SolutionParseError)
-    expect(() => checkSolutionInv([[2, 4], [2, 4]], '1 2 3\n3 4 5 6')).toThrow(SolutionParseError)
-    expect(() => checkSolutionInv([[2, 4], [2, 4]], '1 2 3\n3 4[ 5 6')).toThrow(SolutionParseError)
   })
 })

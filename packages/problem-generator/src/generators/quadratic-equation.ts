@@ -1,23 +1,11 @@
 import { parse } from 'mathjs'
 import { type ProblemGenerator, type Problem } from '../types/problem'
-import { randInt } from '../util/random'
-import { equalClose } from '../util/misc'
+import { equalClose, implicitMultiplication } from '../util/misc'
 import { isFunctionLinear, isSolution, parabolaHasRepeatedSolutions } from '../util/equations'
 import { z } from 'zod'
-import { parseComplexNumbers } from '../util/parse'
-
-// TODO: This doesn't work properly. It still multiplies by 1 xd
-function ensureSign (x: number): string {
-  if (x < 0) {
-    return String(x)
-  }
-
-  if (x === 0) {
-    return ''
-  }
-
-  return `+${x}`
-}
+import { parseComplexOrThrow } from '../util/parse'
+import _ from 'lodash'
+import { formatSumTerms } from '../util/algebra'
 
 const problemSchema = z.object({
   solutionsRepeated: z.boolean(),
@@ -25,21 +13,20 @@ const problemSchema = z.object({
 })
 
 export function quadraticEquationProblemFromVertex (a: number, h: number, k: number): Problem {
-  // TODO: The display of the statement is a bit buggy (e.g. multiplication by 1)
-  const equation = parse(`${(ensureSign(a))} (x${ensureSign(-h)})^2 ${ensureSign(k)}`)
+  const inner = formatSumTerms([{ mult: 'x', coef: 1 }, { mult: '', coef: h }], { parenthesis: true })
+  const squared = `${inner}^2`
+  const firstTerm = { coef: a, mult: squared }
+  const secondTerm = { coef: k, mult: '' }
+  const equation = parse(formatSumTerms(_.shuffle([firstTerm, secondTerm])))
 
   const compiled = equation.compile()
 
-  // TODO: This never throws, but the reason is because the 0 gets removed by the `ensureSign`,
-  //       which is buggy anyway. So this will throw one day.
-  //       Equations have to be built by avoiding making them linear.
-  //       Also, all generation methods have to test this, and avoid creating linear equations.
   if (isFunctionLinear((x: number) => compiled.evaluate({ x }))) {
     throw new Error('Quadratic equation ended up being linear')
   }
 
   return {
-    tex: `f(x) = ${equation.toTex()}`,
+    tex: `f(x) = ${implicitMultiplication(equation).toTex()}`,
     content: {
       solutionsRepeated: parabolaHasRepeatedSolutions(equation),
       equation: equation.toString()
@@ -57,13 +44,13 @@ const convertZeroToOne = (value: number): number => value === 0 ? 1 : value
 
 export const quadraticEquation: ProblemGenerator = {
   fromDifficulty: (difficulty: number) => {
-    const a = convertZeroToOne(randInt(-5, 5))
-    const h = randInt(-5, 5)
-    const k = randInt(-5, 5)
+    const a = convertZeroToOne(_.random(-5, 5))
+    const h = _.random(-5, 5)
+    const k = _.random(-5, 5)
     return quadraticEquationProblemFromVertex(a, h, k)
   },
   checkSolution: (givenSolution: string, { equation, solutionsRepeated }: z.infer<typeof problemSchema>) => {
-    const solutions = ensureAtLeastTwo(parseComplexNumbers(givenSolution))
+    const solutions = ensureAtLeastTwo(givenSolution.split(',').map(parseComplexOrThrow))
 
     if (solutions.length !== 2) return 'incorrect'
 

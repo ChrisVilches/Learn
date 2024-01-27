@@ -1,6 +1,6 @@
+import { SolutionParseError } from '../types/errors'
 import { type SolutionVerdict } from '../types/solution'
 import { buildMatrixProblem, matrixBasic } from './matrix-basic'
-import { SolutionParseError } from '../main'
 
 function checkSolutionSum (A: number[][], B: number[][], sol: string): SolutionVerdict {
   const problem = buildMatrixProblem(A, B, '+')

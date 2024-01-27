@@ -1,7 +1,8 @@
 import { parse, derivative, type MathNode, simplify } from 'mathjs'
 import { type ProblemGenerator, type Problem } from '../types/problem'
-import { checkProblemSolutionSymbolicOrValues, createPolynomial, implicitMultiplication } from '../util/misc'
+import { implicitMultiplication, multipleEvalEqual, symbolicEqual } from '../util/misc'
 import { z } from 'zod'
+import { createPolynomial } from '../util/algebra'
 
 const problemSchema = z.object({
   correctAnswer: z.string().transform(s => parse(s))
@@ -13,7 +14,9 @@ export const integration: ProblemGenerator = {
   },
 
   checkSolution: (givenSolution: string, { correctAnswer }: z.infer<typeof problemSchema>) => {
-    return checkProblemSolutionSymbolicOrValues(givenSolution, correctAnswer, { c: 0, C: 0 })
+    const constants = { c: 0, C: 0 }
+    const correct = symbolicEqual(givenSolution, correctAnswer) || multipleEvalEqual(givenSolution, correctAnswer, constants)
+    return correct ? 'ok' : 'incorrect'
   },
 
   freeInput: true,
@@ -25,7 +28,7 @@ export const integration: ProblemGenerator = {
 export function integrationProblemFromResultExpression (resultExpression: string): Problem {
   const result: MathNode = parse(resultExpression)
 
-  const statement = derivative(result, 'x')
+  const statement = derivative(result, 'x', { simplify: true })
   const correctAnswer = simplify(result)
 
   return {

@@ -5,14 +5,12 @@ import { matrixInversion } from './generators/matrix-inversion'
 import { matrixRank } from './generators/matrix-rank'
 import { quadraticEquation } from './generators/quadratic-equation'
 import { singleVariableDerivative } from './generators/single-variable-derivative'
-import { SolutionParseError as _SolutionParseError } from './types/errors'
-import { type ProblemSolutionOptions as _ProblemSolutionOptions } from './types/problem'
 import { objectKebabKeys } from './util/misc'
 
-// TODO: Is there a better way to re-export the imported value? I don't want this.
-export const SolutionParseError = _SolutionParseError
-export type ProblemSolutionOptions = _ProblemSolutionOptions
-
+// TODO: One way to improve parsing safety is to make the generators simple, but add protection here
+//       (transform the checkSolution functions). That way we can catch all kinds of errors (other syntax
+//       errors that currently may not be handled). Mind the typing may become a bit unsafe, so check
+//       carefully if it's doable or not.
 export const problemGenerators = objectKebabKeys({
   matrixRank,
   matrixBasic,

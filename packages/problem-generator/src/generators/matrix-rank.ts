@@ -1,16 +1,10 @@
 import { z } from 'zod'
 import { computeMatrixRank } from '../python-binding'
-import { createMatrix, matrixToSimpleText, matrixToTex } from '../util/matrix'
+import { createMatrix, matrixToTex, rowLinearCombination } from '../util/matrix'
 import { parseNumberOrThrow } from '../util/parse'
-import { randInt } from '../util/random'
 import { type SolutionVerdict } from '../types/solution'
 import { type Problem, type ProblemGenerator } from '../types/problem'
-
-// TODO: Unit test some examples
-
-// TODO: Almost all examples have full rank.
-//       It's necessary to make some vectors linearly dependent to reduce the rank
-//       and have some problems with different answers.
+import _ from 'lodash'
 
 const problemSchema = z.object({ correctAnswer: z.number() })
 
@@ -19,13 +13,31 @@ export async function buildMatrixProblem (A: number[][]): Promise<Problem> {
   return {
     tex: `Rank${matrixToTex(A)}`,
     content: { correctAnswer },
-    debugInformation: matrixToSimpleText(A)
+    debugInformation: JSON.stringify(A)
+  }
+}
+
+// TODO: Change columns as well (it's a bit harder to implement).
+function randomChangeRowToLinearCombination (A: number[][]): void {
+  const row0 = _.random(0, A.length - 1)
+  const row1 = _.random(0, A.length - 1)
+  const targetRow = _.random(0, A.length - 1)
+  A[targetRow] = rowLinearCombination(A, row0, row1)
+}
+
+function changeRank (A: number[][]): void {
+  const changes = _.random(0, 3)
+  for (let i = 0; i < changes; i++) {
+    randomChangeRowToLinearCombination(A)
   }
 }
 
 export const matrixRank: ProblemGenerator = {
   fromDifficulty: async function (difficulty: number): Promise<Problem> {
-    const A = createMatrix(10, 10, () => randInt(2, 10))
+    const [n, m] = [_.random(2, 4), _.random(2, 4)]
+    const A = createMatrix(n, m, () => _.random(-4, 4))
+    changeRank(A)
+
     return await buildMatrixProblem(A)
   },
 

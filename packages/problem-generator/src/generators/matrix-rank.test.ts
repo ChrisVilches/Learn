@@ -1,4 +1,4 @@
-import { SolutionParseError } from '../main'
+import { SolutionParseError } from '../types/errors'
 import { type SolutionVerdict } from '../types/solution'
 import { buildMatrixProblem, matrixRank } from './matrix-rank'
 
@@ -19,9 +19,9 @@ describe('checkSolution', () => {
     expect(await checkSolution(matrix2, '2')).toBe('incorrect')
   })
 
-  test.skip('parse error', async () => {
-    expect(async () => await checkSolution(matrix1, '  ')).toThrow(SolutionParseError)
-    expect(async () => await checkSolution(matrix1, 'x  ')).toThrow(SolutionParseError)
-    expect(async () => await checkSolution(matrix1, ' i  ')).toThrow(SolutionParseError)
+  test('parse error', async () => {
+    await expect(checkSolution(matrix1, '  ')).rejects.toThrow(SolutionParseError)
+    await expect(checkSolution(matrix1, 'x  ')).rejects.toThrow(SolutionParseError)
+    await expect(checkSolution(matrix1, ' i  ')).rejects.toThrow(SolutionParseError)
   })
 })

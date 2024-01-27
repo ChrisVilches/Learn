@@ -1,13 +1,12 @@
 import { type MathNode, parse } from 'mathjs'
 import { type ProblemGenerator, type Problem } from '../types/problem'
-import { randInt } from '../util/random'
 import { z } from 'zod'
 import { equalClose } from '../util/misc'
+import { parseMathOrThrow } from '../util/parse'
+import _ from 'lodash'
 
-const solutionSchema = z.literal('multiple').or(z.literal('none')).or(z.number())
+const solutionSchema = z.literal('multiple').or(z.literal('none')).or(z.string().transform(parseMathOrThrow))
 
-// TODO: Insane boilerplate. At least move it to an equation util file for linear equations.
-//       (it doesn't work for quadratic or other types, specifically the 'noSolution' one)
 const isSolution = (leftSide: MathNode, rightSide: MathNode, x: number): boolean => {
   return equalClose(dist(leftSide, rightSide, x), 0)
 }
@@ -34,7 +33,7 @@ const problemSchema = z.object({
 
 export const linearEquation: ProblemGenerator = {
   fromDifficulty: function (difficulty: number): Problem | Promise<Problem> {
-    return linearEquationProblemFromParameters(randInt(-3, 3), randInt(-3, 3), randInt(-3, 3), randInt(-3, 3))
+    return linearEquationProblemFromParameters(_.random(-3, 3), _.random(-3, 3), _.random(-3, 3), _.random(-3, 3))
   },
   // TODO: Is there a way to pass a non-string object here? It's a bit trash
   //       It (the change) has to be applied for all problems.
@@ -53,7 +52,7 @@ export const linearEquation: ProblemGenerator = {
 
     if (solution === 'multiple' || solution === 'none') return 'incorrect'
 
-    return isSolution(leftSide, rightSide, solution) ? 'ok' : 'incorrect'
+    return isSolution(leftSide, rightSide, z.number().parse(solution.evaluate())) ? 'ok' : 'incorrect'
   },
 
   freeInput: true,
@@ -94,8 +93,4 @@ export function linearEquationProblemFromParameters (m0: number, b0: number, m1:
       solutionType: getSolutionType(leftSide, rightSide)
     }
   }
-}
-
-export function linearEquationProblemFromDifficulty (difficulty: number): Problem {
-  return linearEquationProblemFromParameters(randInt(-3, 3), randInt(-3, 3), randInt(-3, 3), randInt(-3, 3))
 }

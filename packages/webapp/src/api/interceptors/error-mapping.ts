@@ -12,7 +12,7 @@ import {
   ForbiddenSolveProblem,
   ProblemAlreadyAttempted,
 } from '../../logic/problem-errors';
-import { SolutionParseError } from 'problem-generator';
+import { SolutionParseError } from 'problem-generator/dist/types/errors';
 
 // TODO: Note that this can also be errors from the problem generator parsing (problem-generator module),
 //       so sometimes it may leak keys like "correctAnswer" to the client, which shouldn't happen!!
