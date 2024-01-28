@@ -7,6 +7,8 @@ import { quadraticEquation } from './generators/quadratic-equation'
 import { singleVariableDerivative } from './generators/single-variable-derivative'
 import { objectKebabKeys } from './util/misc'
 
+// TODO: Use "barrel imports". Research.
+
 // TODO: One way to improve parsing safety is to make the generators simple, but add protection here
 //       (transform the checkSolution functions). That way we can catch all kinds of errors (other syntax
 //       errors that currently may not be handled). Mind the typing may become a bit unsafe, so check

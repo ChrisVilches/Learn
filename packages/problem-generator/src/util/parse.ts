@@ -1,11 +1,13 @@
 import { type Complex, type MathNode, parse, complex, evaluate } from 'mathjs'
-import { SolutionParseError } from '../types/errors'
+import { ParseError } from '../types/errors'
 import { isComplex } from './misc'
 import { z } from 'zod'
 
+const complexParseErrorMsg = 'Cannot parse complex number'
+
 export const parseComplexOrThrow = (s: string): Complex => {
   if (s.trim().length === 0) {
-    throw new SolutionParseError()
+    throw new ParseError(complexParseErrorMsg)
   }
 
   try {
@@ -15,7 +17,7 @@ export const parseComplexOrThrow = (s: string): Complex => {
     }
   } catch {}
 
-  throw new SolutionParseError('Cannot parse complex number')
+  throw new ParseError(complexParseErrorMsg)
 }
 
 export function parseMatrixAuto (s: string): number[][] {
@@ -29,7 +31,7 @@ export function parseMatrixSymbolic (m: string): number[][] {
   try {
     return z.object({ _data: z.array(z.array(z.number())) }).parse(evaluate(m))._data
   } catch {
-    throw new SolutionParseError('Cannot parse matrix')
+    throw new ParseError('Cannot parse matrix')
   }
 }
 
@@ -46,14 +48,14 @@ export function parseMatrixNumbersOnly (matrix: string): number[][] {
     const cells = row.split(oneOrMultipleSpaces)
     m ??= cells.length
     if (cells.length !== m) {
-      throw new SolutionParseError('Matrix column count does not match')
+      throw new ParseError('Matrix column count does not match')
     }
 
     result.push(cells.map(parseNumberOrThrow))
   }
 
   if (n === 0 || m === 0) {
-    throw new SolutionParseError('Matrix cannot be empty')
+    throw new ParseError('Matrix cannot be empty')
   }
 
   return result
@@ -63,18 +65,18 @@ export function parseNumberOrThrow (s: string): number {
   try {
     return z.string().trim().min(1).transform(Number).pipe(z.number()).parse(s)
   } catch {
-    throw new SolutionParseError(`Cannot convert '${s}' to number`)
+    throw new ParseError(`Cannot convert '${s}' to number`)
   }
 }
 
 export function parseMathOrThrow (s: string): MathNode {
-  if (s.trim().length === 0) {
-    throw new SolutionParseError()
-  }
-
   try {
+    if (s.trim().length === 0) {
+      throw new Error()
+    }
+
     return parse(s)
   } catch {
-    throw new SolutionParseError(`Cannot parse: ${s}`)
+    throw new ParseError(`Cannot parse (mathjs): ${s}`)
   }
 }

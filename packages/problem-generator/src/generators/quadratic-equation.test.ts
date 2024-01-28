@@ -1,4 +1,4 @@
-import { SolutionParseError } from '../types/errors'
+import { ParseError } from '../types/errors'
 import { type SolutionVerdict } from '../types/solution'
 import { quadraticEquation, quadraticEquationProblemFromVertex } from './quadratic-equation'
 
@@ -37,10 +37,10 @@ describe('checkSolution', () => {
   })
 
   test('bad syntax', () => {
-    expect(() => checkSolutionFromVertex(1, 2, 1, '  ')).toThrow(SolutionParseError)
-    expect(() => checkSolutionFromVertex(1, 2, 1, ' , , , ')).toThrow(SolutionParseError)
+    expect(() => checkSolutionFromVertex(1, 2, 1, '  ')).toThrow(ParseError)
+    expect(() => checkSolutionFromVertex(1, 2, 1, ' , , , ')).toThrow(ParseError)
     expect(checkSolutionFromVertex(1, 2, 1, '1, 2, 3, 4, 5')).toBe('incorrect')
-    expect(() => checkSolutionFromVertex(1, 2, 1, 'a, b')).toThrow(SolutionParseError)
-    expect(() => checkSolutionFromVertex(1, 2, 1, ' , ')).toThrow(SolutionParseError)
+    expect(() => checkSolutionFromVertex(1, 2, 1, 'a, b')).toThrow(ParseError)
+    expect(() => checkSolutionFromVertex(1, 2, 1, ' , ')).toThrow(ParseError)
   })
 })

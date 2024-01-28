@@ -13,7 +13,7 @@ const problemSchema = z.object({
 })
 
 export function quadraticEquationProblemFromVertex (a: number, h: number, k: number): Problem {
-  const inner = formatSumTerms([{ mult: 'x', coef: 1 }, { mult: '', coef: h }], { parenthesis: true })
+  const inner = formatSumTerms([{ mult: 'x', coef: 1 }, { mult: '', coef: -h }], { parenthesis: true })
   const squared = `${inner}^2`
   const firstTerm = { coef: a, mult: squared }
   const secondTerm = { coef: k, mult: '' }

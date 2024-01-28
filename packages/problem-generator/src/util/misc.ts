@@ -1,5 +1,4 @@
 import { type MathNode, simplify, type Complex, OperatorNode } from 'mathjs'
-import { SolutionParseError } from '../types/errors'
 import { parseMathOrThrow } from './parse'
 
 function createSequenceNumbers (length: number, low = -1000, high = 1000): number[] {
@@ -50,16 +49,12 @@ export function multipleEvalEqual (exp1: MathNode | string, exp2: MathNode | str
   const compiled1 = a.compile()
   const compiled2 = b.compile()
 
-  try {
-    for (const x of values) {
-      const opts = Object.assign(args, { x })
-      const result1 = compiled1.evaluate(opts) as ComparableNumber
-      const result2 = compiled2.evaluate(opts) as ComparableNumber
+  for (const x of values) {
+    const opts = Object.assign(args, { x })
+    const result1 = compiled1.evaluate(opts) as ComparableNumber
+    const result2 = compiled2.evaluate(opts) as ComparableNumber
 
-      if (!equalClose(result1, result2)) return false
-    }
-  } catch (e) {
-    throw new SolutionParseError()
+    if (!equalClose(result1, result2)) return false
   }
 
   return true

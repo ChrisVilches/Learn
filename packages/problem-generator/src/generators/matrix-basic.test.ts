@@ -1,4 +1,4 @@
-import { SolutionParseError } from '../types/errors'
+import { ParseError } from '../types/errors'
 import { type SolutionVerdict } from '../types/solution'
 import { buildMatrixProblem, matrixBasic } from './matrix-basic'
 
@@ -10,7 +10,7 @@ function checkSolutionSum (A: number[][], B: number[][], sol: string): SolutionV
 describe('checkSolution', () => {
   test('rejects symbolic solution', () => {
     const sol = '[[1, 1], [1, 1]] + [[2, 2], [2, 2]]'
-    expect(() => checkSolutionSum([[1, 1], [1, 1]], [[2, 2], [2, 2]], sol)).toThrow(SolutionParseError)
+    expect(() => checkSolutionSum([[1, 1], [1, 1]], [[2, 2], [2, 2]], sol)).toThrow(ParseError)
   })
 
   test('accepts numeric solution', () => {

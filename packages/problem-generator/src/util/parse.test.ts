@@ -1,11 +1,11 @@
-import { SolutionParseError } from '../types/errors'
+import { ParseError } from '../types/errors'
 import { parseComplexOrThrow, parseMatrixAuto, parseMatrixNumbersOnly, parseMatrixSymbolic, parseNumberOrThrow } from './parse'
 
 describe(parseComplexOrThrow.name, () => {
   test('bad syntax', () => {
-    expect(() => parseComplexOrThrow('aaa')).toThrow(SolutionParseError)
-    expect(() => parseComplexOrThrow('x')).toThrow(SolutionParseError)
-    expect(() => parseComplexOrThrow('   ')).toThrow(SolutionParseError)
+    expect(() => parseComplexOrThrow('aaa')).toThrow(ParseError)
+    expect(() => parseComplexOrThrow('x')).toThrow(ParseError)
+    expect(() => parseComplexOrThrow('   ')).toThrow(ParseError)
   })
 
   test('correct', () => {
@@ -17,10 +17,10 @@ describe(parseComplexOrThrow.name, () => {
 
 describe(parseMatrixSymbolic.name, () => {
   test('bad syntax', () => {
-    expect(() => parseMatrixSymbolic('aaa')).toThrow(SolutionParseError)
-    expect(() => parseMatrixSymbolic('x')).toThrow(SolutionParseError)
-    expect(() => parseMatrixSymbolic('   ')).toThrow(SolutionParseError)
-    expect(() => parseMatrixSymbolic('  [1, 2, 3], [4, 5, 6]  ')).toThrow(SolutionParseError)
+    expect(() => parseMatrixSymbolic('aaa')).toThrow(ParseError)
+    expect(() => parseMatrixSymbolic('x')).toThrow(ParseError)
+    expect(() => parseMatrixSymbolic('   ')).toThrow(ParseError)
+    expect(() => parseMatrixSymbolic('  [1, 2, 3], [4, 5, 6]  ')).toThrow(ParseError)
   })
 
   test('correct', () => {
@@ -32,10 +32,10 @@ describe(parseMatrixSymbolic.name, () => {
 
 describe(parseMatrixNumbersOnly.name, () => {
   test('bad syntax', () => {
-    expect(() => parseMatrixNumbersOnly('1 2 3\n2 3')).toThrow(SolutionParseError)
-    expect(() => parseMatrixNumbersOnly('')).toThrow(SolutionParseError)
-    expect(() => parseMatrixNumbersOnly('   ')).toThrow(SolutionParseError)
-    expect(() => parseMatrixNumbersOnly('1 2 3\n2 3 a')).toThrow(SolutionParseError)
+    expect(() => parseMatrixNumbersOnly('1 2 3\n2 3')).toThrow(ParseError)
+    expect(() => parseMatrixNumbersOnly('')).toThrow(ParseError)
+    expect(() => parseMatrixNumbersOnly('   ')).toThrow(ParseError)
+    expect(() => parseMatrixNumbersOnly('1 2 3\n2 3 a')).toThrow(ParseError)
   })
 
   test('correct', () => {
@@ -52,11 +52,11 @@ describe(parseMatrixAuto.name, () => {
 
 describe(parseNumberOrThrow.name, () => {
   test('bad syntax', () => {
-    expect(() => parseNumberOrThrow('1 2 3\n2 3')).toThrow(SolutionParseError)
-    expect(() => parseNumberOrThrow('')).toThrow(SolutionParseError)
-    expect(() => parseNumberOrThrow('   ')).toThrow(SolutionParseError)
-    expect(() => parseNumberOrThrow('x')).toThrow(SolutionParseError)
-    expect(() => parseNumberOrThrow('sqrt(2)')).toThrow(SolutionParseError)
+    expect(() => parseNumberOrThrow('1 2 3\n2 3')).toThrow(ParseError)
+    expect(() => parseNumberOrThrow('')).toThrow(ParseError)
+    expect(() => parseNumberOrThrow('   ')).toThrow(ParseError)
+    expect(() => parseNumberOrThrow('x')).toThrow(ParseError)
+    expect(() => parseNumberOrThrow('sqrt(2)')).toThrow(ParseError)
   })
 
   test('correct', () => {

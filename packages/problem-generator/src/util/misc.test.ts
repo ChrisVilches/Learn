@@ -35,6 +35,8 @@ test(multipleEvalEqual.name, () => {
   expect(multipleEvalEqual(parse('log(x) + 2x + 5'), parse('7 - 1 + (log(x)/2) + (log(x)/2) + x + x'))).toBe(false)
   expect(multipleEvalEqual(parse('log(x) + 2x + 5'), parse('-2 + x + log(x) + x + 7'))).toBe(true)
   expect(multipleEvalEqual(parse('x'), parse('abs(x)'), {}, [0, 2, 3, 4, 5])).toBe(true)
+  expect(multipleEvalEqual(parse('6'), parse('6'), {}, [0, 2, 3, 4, 5])).toBe(true)
+  expect(() => multipleEvalEqual(parse('['), parse('6'), {}, [0, 2, 3, 4, 5])).toThrow()
 })
 
 test(camelToKebab.name, () => {
