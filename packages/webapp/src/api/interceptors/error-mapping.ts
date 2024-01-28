@@ -11,8 +11,9 @@ import { ZodError } from 'zod';
 import {
   ForbiddenSolveProblem,
   ProblemAlreadyAttempted,
+  SolutionCannotBeProcessed,
 } from '../../logic/problem-errors';
-import { SolutionParseError } from 'problem-generator/dist/types/errors';
+import { ParseError } from 'problem-generator/dist/types/errors';
 
 // TODO: Note that this can also be errors from the problem generator parsing (problem-generator module),
 //       so sometimes it may leak keys like "correctAnswer" to the client, which shouldn't happen!!
@@ -45,8 +46,12 @@ export class ErrorMappingInterceptor implements NestInterceptor {
           throw new BadRequestException(err.message);
         }
 
-        if (err instanceof SolutionParseError) {
+        if (err instanceof ParseError) {
           throw new BadRequestException('Cannot parse solution');
+        }
+
+        if (err instanceof SolutionCannotBeProcessed) {
+          throw new BadRequestException(err.message);
         }
 
         throw err;

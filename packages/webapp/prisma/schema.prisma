@@ -13,7 +13,9 @@ datasource db {
 model User {
   id                Int                        @id @default(autoincrement())
   email             String                     @unique
-  userName          String
+  username          String                     @unique
+  password          String
+  salt              String
   generatedProblems GeneratedProblem[]
   problemGenerators UsersOnProblemGenerators[]
   createdAt         DateTime                   @default(now())
@@ -58,6 +60,8 @@ model UsersOnProblemGenerators {
 
 model Category {
   id                Int                @id @default(autoincrement())
+  name              String
+  description       String
   slug              String             @unique
   generatedProblems GeneratedProblem[]
   problemGenerators ProblemGenerator[]

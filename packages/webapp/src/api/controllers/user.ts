@@ -1,15 +1,22 @@
-import { Controller, Get, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ErrorMappingInterceptor } from '../interceptors/error-mapping';
-import { AuthGuard } from '../guards/auth';
-import { CurrentUser } from '../decorators/current-user';
 import { User } from '@prisma/client';
+import { JwtAuthGuard } from '../../auth/guards/jwt';
+
+// TODO: Type of "user" set by Nest might not match with the "User" in Prisma, so refactor.
 
 @Controller()
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 @UseInterceptors(new ErrorMappingInterceptor())
 export class UserController {
   @Get('/me')
-  async me(@CurrentUser() user: User): Promise<User> {
+  async me(@Req() { user }): Promise<User> {
     return user;
   }
 }

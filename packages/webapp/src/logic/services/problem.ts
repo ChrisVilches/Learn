@@ -9,6 +9,7 @@ import {
 import {
   ForbiddenSolveProblem,
   ProblemAlreadyAttempted,
+  SolutionCannotBeProcessed,
 } from '../problem-errors';
 import { CategoryService } from './category';
 import { problemGenerators } from 'problem-generator';
@@ -18,12 +19,12 @@ import { ProblemSolutionOptions } from 'problem-generator/dist/types/problem';
 @Injectable()
 export class ProblemService {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly categoryService: CategoryService,
+    private readonly prisma: PrismaService,
   ) {}
 
   async generateProblem(
-    user: User,
+    user: any,
     difficulty: number,
     category: Category,
   ): Promise<GeneratedProblem & ProblemSolutionOptions> {
@@ -31,6 +32,7 @@ export class ProblemService {
       user,
       category,
     );
+
     const gen = problemGenerators[name];
     const { tex, debugInformation, content } =
       await gen.fromDifficulty(difficulty);
@@ -40,7 +42,7 @@ export class ProblemService {
       problemGenerator: { connect: { id, name } },
       tex,
       debugInformation,
-      userAssigned: { connect: user },
+      userAssigned: { connect: { id: user.id } },
       category: { connect: category },
       content,
     };
@@ -103,13 +105,16 @@ export class ProblemService {
     const { checkSolution, problemContentParser } =
       problemGenerators[generator.name];
 
-    const verdict = checkSolution(
-      problemSolution,
-      problemContentParser.parse(problem.content),
-    );
-
-    await this.problemSetVerdict(problem, verdict === 'ok');
-    return verdict;
+    try {
+      const verdict = checkSolution(
+        problemSolution,
+        problemContentParser.parse(problem.content),
+      );
+      await this.problemSetVerdict(problem, verdict === 'ok');
+      return verdict;
+    } catch {
+      throw new SolutionCannotBeProcessed();
+    }
   }
 
   private async problemSetVerdict(

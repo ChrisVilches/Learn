@@ -1,6 +1,6 @@
 import { Injectable, type PipeTransform } from '@nestjs/common';
 import { type Category } from '@prisma/client';
-import { CategoryService } from 'src/logic/services/category';
+import { CategoryService } from '../../logic/services/category';
 import { z } from 'zod';
 
 @Injectable()

@@ -1,13 +1,15 @@
 import { Injectable, type OnModuleInit } from '@nestjs/common';
 import { PrismaService } from './services/prisma';
 import { problemGenerators } from 'problem-generator';
+import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
 export class DataCheck implements OnModuleInit {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly moduleRef: ModuleRef) {}
 
   private async checkGeneratorIntegrity(): Promise<void> {
-    const dbGenerators = await this.prisma.problemGenerator.findMany();
+    const prisma = this.moduleRef.get(PrismaService);
+    const dbGenerators = await prisma.problemGenerator.findMany();
     const dbNames = new Set(dbGenerators.map((g) => g.name));
     const libNames = new Set(Object.keys(problemGenerators));
     const allNames = new Set([...dbNames, ...libNames]);

@@ -5,7 +5,7 @@ import {
   type Category,
   type ProblemGenerator,
 } from '@prisma/client';
-import { arraySample } from 'src/util/misc';
+import { sample } from 'lodash';
 
 export type ProblemGeneratorWithEnabled = Pick<
   ProblemGenerator,
@@ -49,9 +49,9 @@ export class CategoryService {
     const enabled = generators.filter((g) => g.enabled);
 
     if (enabled.length > 0) {
-      return arraySample(enabled);
+      return sample(enabled) as ProblemGeneratorWithEnabled;
     } else {
-      return arraySample(generators);
+      return sample(generators) as ProblemGeneratorWithEnabled;
     }
   }
 

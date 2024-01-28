@@ -5,36 +5,36 @@ import {
   Param,
   Post,
   Query,
+  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ErrorMappingInterceptor } from '../interceptors/error-mapping';
-import { AuthGuard } from '../guards/auth';
 import { CategoryFromSlugPipe } from '../pipes/category-from-slug';
 import {
   NewProblemRequestOptions,
   newProblemRequestOptionsSchema,
 } from '../schemas/new-problem-request-options';
 import { ZodPipe } from '../pipes/zod';
-import { CurrentUser } from '../decorators/current-user';
 import {
   ProblemSolution,
   problemSolutionSchema,
 } from '../schemas/problem-solution';
 import { ProblemService } from '../../logic/services/problem';
-import { Category, type GeneratedProblem, User } from '@prisma/client';
+import { Category, type GeneratedProblem } from '@prisma/client';
 import { SolutionVerdict } from 'problem-generator/dist/types/solution';
 import { ProblemSolutionOptions } from 'problem-generator/dist/types/problem';
+import { JwtAuthGuard } from '../../auth/guards/jwt';
 
 @Controller()
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 @UseInterceptors(new ErrorMappingInterceptor())
 export class ProblemController {
   constructor(private readonly problemService: ProblemService) {}
 
   @Get('/new-problem/:category_slug')
   async newProblem(
-    @CurrentUser() user: User,
+    @Req() { user },
     @Query(new ZodPipe(newProblemRequestOptionsSchema))
     { difficulty }: NewProblemRequestOptions,
     @Param('category_slug', CategoryFromSlugPipe) category: Category,
@@ -58,7 +58,7 @@ export class ProblemController {
 
   @Post('/judge-problem')
   async judgeSolution(
-    @CurrentUser() user: User,
+    @Req() { user },
     @Body(new ZodPipe(problemSolutionSchema))
     { problemId, solution }: ProblemSolution,
   ): Promise<{ verdict: SolutionVerdict }> {

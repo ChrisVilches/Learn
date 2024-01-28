@@ -1,21 +1,30 @@
+import { NestFactory } from '@nestjs/core';
 import { PrismaClient } from '@prisma/client';
+import { AuthModule } from '../src/auth/auth-module';
+import { AuthService } from '../src/auth/services/auth';
+import { INestApplication } from '@nestjs/common';
+
 const prisma = new PrismaClient();
+let app: INestApplication;
 
 async function main(): Promise<void> {
-  const defaultUser = await prisma.user.upsert({
-    where: { email: 'dummy@gmail.com' },
-    update: {},
-    create: {
-      email: 'dummy@gmail.com',
-      userName: 'DefaultDummy',
-    },
-  });
+  app = await NestFactory.create(AuthModule);
+  const authService = await app.get(AuthService);
+
+  const defaultUser = await authService.registerUser(
+    'dummy@gmail.com',
+    'DefaultDummy',
+    'pass',
+  );
 
   await prisma.category.upsert({
     where: { slug: 'linalg' },
     update: {},
     create: {
       slug: 'linalg',
+      name: 'Linear Algebra',
+      description:
+        'Linear algebra is the branch of mathematics concerning linear equations, linear maps and their representations in vector spaces and through matrices.',
       problemGenerators: {
         create: [
           { name: 'matrix-basic' },
@@ -31,6 +40,9 @@ async function main(): Promise<void> {
     update: {},
     create: {
       slug: 'calculus',
+      name: 'Calculus',
+      description:
+        'Calculus is the mathematical study of continuous change, in the same way that geometry is the study of shape, and algebra is the study of generalizations of arithmetic operations.',
       problemGenerators: {
         create: [
           { name: 'integration' },
@@ -45,6 +57,9 @@ async function main(): Promise<void> {
     update: {},
     create: {
       slug: 'algebra',
+      name: 'Algebra',
+      description:
+        'Algebra is the study of variables and the rules for manipulating these variables in formulas.',
       problemGenerators: {
         create: [{ name: 'quadratic-equation' }, { name: 'linear-equation' }],
       },
@@ -60,11 +75,11 @@ async function main(): Promise<void> {
   });
 }
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
   .catch(async (e) => {
     console.error(e);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await app.close();
     await prisma.$disconnect();
-    process.exit(1);
   });

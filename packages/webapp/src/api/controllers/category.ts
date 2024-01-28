@@ -8,38 +8,38 @@ import {
   Put,
   UseGuards,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { ErrorMappingInterceptor } from '../interceptors/error-mapping';
-import { AuthGuard } from '../guards/auth';
 import { CategoryFromSlugPipe } from '../pipes/category-from-slug';
-import { CurrentUser } from '../decorators/current-user';
-import { Category, User } from '@prisma/client';
+import { Category } from '@prisma/client';
 import {
   CategoryService,
   ProblemGeneratorWithEnabled,
-} from 'src/logic/services/category';
+} from '../../logic/services/category';
+import { JwtAuthGuard } from '../../auth/guards/jwt';
 
 @Controller()
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 @UseInterceptors(new ErrorMappingInterceptor())
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
+
+  @Get('/category/:category_slug')
+  getCategory(
+    @Param('category_slug', CategoryFromSlugPipe) category: Category,
+  ): Category {
+    return category;
+  }
 
   @Get('/categories')
   async getCategories(): Promise<Category[]> {
     return await this.categoryService.fetchAllCategories();
   }
 
-  // @Get('/category/:category_slug/generators')
-  // async getCategoryGenerators(
-  //   @Param('category_slug', CategoryFromSlugPipe) category: Category,
-  // ): Promise<Array<Pick<ProblemGenerator, 'id' | 'name'>>> {
-  //   return await this.categoryService.fetchCategoryGenerators(category);
-  // }
-
   @Get('/category/:category_slug/enabled-generators')
   async getCategoryEnabledGenerators(
-    @CurrentUser() user: User,
+    @Req() { user },
     @Param('category_slug', CategoryFromSlugPipe) category: Category,
   ) {
     return await this.categoryService.fetchUserGenerators(user, category);
@@ -47,7 +47,7 @@ export class CategoryController {
 
   @Put('/toggle-generator/:problem_generator_id')
   async toggleEnabledGenerator(
-    @CurrentUser() user: User,
+    @Req() { user },
     @Param('problem_generator_id', ParseIntPipe) generatorId: number,
     @Body('enable', ParseBoolPipe) enable: boolean,
   ): Promise<ProblemGeneratorWithEnabled> {

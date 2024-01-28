@@ -6,14 +6,13 @@ import { CategoryService } from './services/category';
 import { DataCheck } from './data-check';
 
 @Module({
-  imports: [],
   providers: [
+    PrismaService,
+    CategoryService,
     ProblemService,
     UserService,
-    CategoryService,
-    PrismaService,
     DataCheck,
   ],
-  exports: [ProblemService, UserService, CategoryService],
+  exports: [CategoryService, ProblemService, UserService, PrismaService],
 })
 export class LogicModule {}
