@@ -3,6 +3,8 @@ import { httpClientAuth } from './http-client-auth'
 
 const categorySchema = z.object({
   id: z.number(),
+  name: z.string(),
+  description: z.string(),
   slug: z.string()
 })
 
@@ -20,6 +22,12 @@ export async function fetchCategories (): Promise<Category[]> {
   const result = await httpClientAuth.get('/categories')
 
   return categorySchema.array().parse(result.data)
+}
+
+export async function fetchCategory (slug: string): Promise<Category> {
+  const result = await httpClientAuth.get(`/category/${slug}`)
+
+  return categorySchema.parse(result.data)
 }
 
 export async function fetchCategoryGenerators (categorySlug: string): Promise<ProblemGenerator[]> {

@@ -20,7 +20,7 @@ const problemVerdictSchema = z.object({
 
 type ProblemVerdict = z.infer<typeof problemVerdictSchema>
 
-export async function generateNewProblem (categorySlug: string, difficulty: number = 10): Promise<Problem> {
+export async function generateNewProblem (categorySlug: string, difficulty: number): Promise<Problem> {
   const result = await httpClientAuth.get(`/new-problem/${categorySlug}`, {
     params: {
       difficulty

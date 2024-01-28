@@ -1,14 +1,26 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { z } from 'zod'
 
 const loginServiceResultSchema = z.object({
   accessToken: z.string()
 })
 
-export async function loginService (email: string): Promise<z.infer<typeof loginServiceResultSchema>> {
-  const result = await axios.post('http://localhost:3000/login', {
-    email
-  })
+type LoginServiceResult = z.infer<typeof loginServiceResultSchema>
 
-  return loginServiceResultSchema.parse(result.data)
+// TODO: How to send pass securely?
+export async function loginService (username: string, password: string): Promise<LoginServiceResult> {
+  try {
+    const result = await axios.post('http://localhost:3000/auth/login', {
+      username,
+      password
+    })
+
+    return loginServiceResultSchema.parse(result.data)
+  } catch (e: unknown) {
+    if (e instanceof AxiosError && e.response?.status === 401) {
+      throw new Error('Incorrect username or password')
+    }
+
+    throw new Error('There was an error')
+  }
 }

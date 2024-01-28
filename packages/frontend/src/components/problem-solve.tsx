@@ -4,9 +4,11 @@ import { type Problem, generateNewProblem, judgeProblem } from '../api-client/pr
 import { useMutation, useQuery } from 'react-query'
 import { useCallback, useState } from 'react'
 import { apiErrorSchema } from '../api-client/http-client-auth'
+import { isUndefined } from 'lodash'
 
 interface ProblemSolveProps {
   slug: string
+  difficulty: number
 }
 
 interface ProblemSolveInnerProps {
@@ -83,13 +85,10 @@ const ProblemSolveInner = ({ problem, fetchNextProblem }: ProblemSolveInnerProps
   )
 }
 
-export const ProblemSolve = ({ slug }: ProblemSolveProps): JSX.Element => {
+export const ProblemSolve = ({ slug, difficulty }: ProblemSolveProps): JSX.Element => {
   const { isFetching: isProblemLoading, isError, refetch, data } = useQuery(
     [generateNewProblem.name, slug],
-    async () => await generateNewProblem(slug ?? ''),
-    {
-      refetchOnWindowFocus: false
-    }
+    async () => await generateNewProblem(slug ?? '', difficulty)
   )
 
   const fetchNextProblem = useCallback(() => {
@@ -100,7 +99,7 @@ export const ProblemSolve = ({ slug }: ProblemSolveProps): JSX.Element => {
     return <span>Loading problem...</span>
   }
 
-  if (isError || typeof data === 'undefined') {
+  if (isError || isUndefined(data)) {
     // TODO: Handle later. First I have to reproduce it. Use an ErrorBoundary?
     throw new Error()
   }
