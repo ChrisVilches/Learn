@@ -1,10 +1,12 @@
-import { Injectable, type OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, type OnModuleInit } from '@nestjs/common';
 import { PrismaService } from './services/prisma';
 import { problemGenerators } from 'problem-generator';
 import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
 export class DataCheck implements OnModuleInit {
+  private readonly logger = new Logger(DataCheck.name);
+
   constructor(private readonly moduleRef: ModuleRef) {}
 
   private async checkGeneratorIntegrity(): Promise<void> {
@@ -14,12 +16,15 @@ export class DataCheck implements OnModuleInit {
     const libNames = new Set(Object.keys(problemGenerators));
     const allNames = new Set([...dbNames, ...libNames]);
 
-    console.log('Checking problem generators:');
+    this.logger.debug('Checking problem generators:');
     for (const gen of allNames) {
       const ok = dbNames.has(gen) && libNames.has(gen);
 
       const icon = ok ? '❎' : '❌';
-      console.log(`${icon} ${gen}`);
+
+      if (process.env.NODE_ENV !== 'test') {
+        this.logger.debug(`${icon} ${gen}`);
+      }
     }
   }
 

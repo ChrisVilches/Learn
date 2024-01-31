@@ -6,8 +6,8 @@ import { matrixRank } from './generators/matrix-rank'
 import { quadraticEquation } from './generators/quadratic-equation'
 import { singleVariableDerivative } from './generators/single-variable-derivative'
 import { objectKebabKeys } from './util/misc'
-
-// TODO: Use "barrel imports". Research.
+export { type SolutionVerdict } from './types/solution'
+export { type ProblemSolutionOptions } from './types/problem'
 
 // TODO: One way to improve parsing safety is to make the generators simple, but add protection here
 //       (transform the checkSolution functions). That way we can catch all kinds of errors (other syntax

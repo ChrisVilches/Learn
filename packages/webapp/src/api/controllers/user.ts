@@ -9,8 +9,6 @@ import { ErrorMappingInterceptor } from '../interceptors/error-mapping';
 import { User } from '@prisma/client';
 import { JwtAuthGuard } from '../../auth/guards/jwt';
 
-// TODO: Type of "user" set by Nest might not match with the "User" in Prisma, so refactor.
-
 @Controller()
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(new ErrorMappingInterceptor())

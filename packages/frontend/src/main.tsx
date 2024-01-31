@@ -10,6 +10,7 @@ import { HomePage } from './pages/home.tsx'
 import { CategoriesPage } from './pages/categories.tsx'
 import { CategoryPage } from './pages/category.tsx'
 import { MathJaxContext } from 'better-react-mathjax'
+import { NotFoundPage } from './pages/not-found.tsx'
 
 function getRootElement (): HTMLElement {
   const result = document.getElementById('root')
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
   {
     path: '/category/:slug/solve',
     element: <CategoryPage/>
+  },
+  {
+    path: '*',
+    element: <NotFoundPage/>
   }
 ])
 

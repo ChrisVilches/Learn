@@ -7,7 +7,6 @@ const loginServiceResultSchema = z.object({
 
 type LoginServiceResult = z.infer<typeof loginServiceResultSchema>
 
-// TODO: How to send pass securely?
 export async function loginService (username: string, password: string): Promise<LoginServiceResult> {
   try {
     const result = await axios.post('http://localhost:3000/auth/login', {
@@ -21,6 +20,7 @@ export async function loginService (username: string, password: string): Promise
       throw new Error('Incorrect username or password')
     }
 
+    // TODO: Not sure how to structure the global error handling.
     throw new Error('There was an error')
   }
 }

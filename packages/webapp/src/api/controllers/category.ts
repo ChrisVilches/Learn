@@ -12,12 +12,14 @@ import {
 } from '@nestjs/common';
 import { ErrorMappingInterceptor } from '../interceptors/error-mapping';
 import { CategoryFromSlugPipe } from '../pipes/category-from-slug';
-import { Category } from '@prisma/client';
-import {
-  CategoryService,
-  ProblemGeneratorWithEnabled,
-} from '../../logic/services/category';
+import { Category, CategoryPreferences } from '@prisma/client';
+import { CategoryService } from '../../logic/services/category';
 import { JwtAuthGuard } from '../../auth/guards/jwt';
+import { ZodPipe } from '../pipes/zod';
+import {
+  CategoryPreferencesConfig,
+  categoryPreferencesConfigSchema,
+} from '../../logic/schemas/category-preferences';
 
 @Controller()
 @UseGuards(JwtAuthGuard)
@@ -26,10 +28,32 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get('/category/:category_slug')
-  getCategory(
+  async getCategory(
+    @Req() { user },
     @Param('category_slug', CategoryFromSlugPipe) category: Category,
-  ): Category {
-    return category;
+  ): Promise<
+    Category & { preferences: Pick<CategoryPreferences, 'difficulty'> }
+  > {
+    const preferences = await this.categoryService.fetchUserPreferences(
+      user.id,
+      category.id,
+    );
+
+    return { ...category, preferences };
+  }
+
+  @Put('/category/:category_slug/preferences')
+  async setCategoryPreferences(
+    @Req() { user },
+    @Param('category_slug', CategoryFromSlugPipe) category: Category,
+    @Body(new ZodPipe(categoryPreferencesConfigSchema))
+    payload: CategoryPreferencesConfig,
+  ) {
+    return await this.categoryService.setCategoryPreferences(
+      user.id,
+      category.id,
+      payload.difficulty,
+    );
   }
 
   @Get('/categories')
@@ -50,7 +74,7 @@ export class CategoryController {
     @Req() { user },
     @Param('problem_generator_id', ParseIntPipe) generatorId: number,
     @Body('enable', ParseBoolPipe) enable: boolean,
-  ): Promise<ProblemGeneratorWithEnabled> {
+  ) {
     return await this.categoryService.toggleEnabledGenerator(
       user,
       generatorId,

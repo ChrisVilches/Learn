@@ -30,7 +30,6 @@ export const ProblemGeneratorsConfiguration = ({ slug }: ProblemGeneratorsConfig
   const { isLoading, isError, data } = useQuery(
     [fetchCategoryGenerators.name, slug],
     async () => await fetchCategoryGenerators(slug)
-    // TODO: Add the "don't refetch on window re-focus"
   )
 
   const initEnabled = useMemo(() => data?.filter(g => g.enabled).map(g => g.id) ?? [], [data])

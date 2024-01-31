@@ -13,13 +13,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  // TODO: Change names. I don't understand what everything means lol (I don't understand
-  //       where in the flow is every method located.)
-  async validateUser(
+  async validateUserCredentials(
     username: string,
     password: string,
   ): Promise<Pick<User, 'id' | 'email' | 'username'> | null> {
-    const user = await this.userService.findUserByUsername(username);
+    const user = await this.userService.findUserByUsername(username.trim());
 
     if (
       user !== null &&
@@ -32,13 +30,22 @@ export class AuthService {
     return null;
   }
 
-  async registerUser(
+  async createNewUserRegistration(
     email: string,
     username: string,
     password: string,
   ): Promise<User> {
     const { hashedPassword, salt } = await generatePassword(password);
 
+    // TODO: Email and username have to be case-insensitive, but it's not
+    //       so easy to implement.
+    //       * If I use a PG extension in `development` or `test`, I can
+    //         verify integration tests pass, but I won't be able to verify
+    //         it's installed correctly on production.
+    //       * If I use mode: 'insensitive', it will work for filtering, but
+    //         won't work for adding new users (i.e. the code below).
+    //       Can this help?
+    //       https://stackoverflow.com/a/59101567/4757175
     return await this.prisma.user.create({
       data: {
         email,
@@ -49,8 +56,8 @@ export class AuthService {
     });
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
+  async signUserToken(id: number, username: string) {
+    const payload = { username, sub: id };
     return {
       accessToken: this.jwtService.sign(payload),
     };

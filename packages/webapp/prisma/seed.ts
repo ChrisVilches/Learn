@@ -11,7 +11,7 @@ async function main(): Promise<void> {
   app = await NestFactory.create(AuthModule);
   const authService = await app.get(AuthService);
 
-  const defaultUser = await authService.registerUser(
+  const defaultUser = await authService.createNewUserRegistration(
     'dummy@gmail.com',
     'DefaultDummy',
     'pass',

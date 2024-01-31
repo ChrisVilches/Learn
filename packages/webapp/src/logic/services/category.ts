@@ -4,19 +4,26 @@ import {
   type User,
   type Category,
   type ProblemGenerator,
+  CategoryPreferences,
 } from '@prisma/client';
-import { sample } from 'lodash';
+import { sample, omitBy, isNil } from 'lodash';
+import { categoryPreferencesConfigSchema } from '../schemas/category-preferences';
 
-export type ProblemGeneratorWithEnabled = Pick<
-  ProblemGenerator,
-  'id' | 'name'
-> & {
+type ProblemGeneratorWithEnabled = Pick<ProblemGenerator, 'id' | 'name'> & {
   enabled: boolean;
 };
 
 @Injectable()
 export class CategoryService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findGeneratorById(id: number): Promise<ProblemGenerator> {
+    return await this.prisma.problemGenerator.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    });
+  }
 
   async fetchUserGenerators(
     user: User,
@@ -39,6 +46,59 @@ export class CategoryService {
     const enabledIds = new Set(enabled.map((g) => g.id));
 
     return all.map((g) => ({ ...g, enabled: enabledIds.has(g.id) }));
+  }
+
+  async setCategoryPreferences(
+    userId: number,
+    categoryId: number,
+    difficulty?: number,
+  ) {
+    const validData = categoryPreferencesConfigSchema.parse({
+      difficulty,
+    });
+
+    const data = omitBy(validData, isNil);
+
+    const createData = Object.assign(this.defaultCategoryPreferences(), data);
+
+    return await this.prisma.categoryPreferences.upsert({
+      where: {
+        userId_categoryId: {
+          userId: userId,
+          categoryId,
+        },
+      },
+      update: data,
+      create: {
+        user: { connect: { id: userId } },
+        category: { connect: { id: categoryId } },
+        ...createData,
+      },
+    });
+  }
+
+  async fetchUserPreferences(
+    userId: number,
+    categoryId: number,
+  ): Promise<Pick<CategoryPreferences, 'difficulty'>> {
+    const preferences = await this.prisma.categoryPreferences.findUnique({
+      select: { difficulty: true },
+      where: {
+        userId_categoryId: {
+          userId,
+          categoryId,
+        },
+      },
+    });
+
+    return preferences ?? this.defaultCategoryPreferences();
+  }
+
+  private defaultCategoryPreferences(): Pick<
+    CategoryPreferences,
+    'difficulty'
+  > {
+    return { difficulty: 10 };
   }
 
   async pickRandomSelectedGenerator(
@@ -105,6 +165,6 @@ export class CategoryService {
   }
 
   async fetchCategory(slug: string): Promise<Category> {
-    return await this.prisma.category.findFirstOrThrow({ where: { slug } });
+    return await this.prisma.category.findUniqueOrThrow({ where: { slug } });
   }
 }

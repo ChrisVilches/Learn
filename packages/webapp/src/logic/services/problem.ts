@@ -6,15 +6,11 @@ import {
   type Category,
   type GeneratedProblem,
 } from '@prisma/client';
-import {
-  ForbiddenSolveProblem,
-  ProblemAlreadyAttempted,
-  SolutionCannotBeProcessed,
-} from '../problem-errors';
+import { SolutionCannotBeProcessed } from '../problem-errors';
 import { CategoryService } from './category';
 import { problemGenerators } from 'problem-generator';
-import { SolutionVerdict } from 'problem-generator/dist/types/solution';
-import { ProblemSolutionOptions } from 'problem-generator/dist/types/problem';
+import { SolutionVerdict } from 'problem-generator';
+import { ProblemSolutionOptions } from 'problem-generator';
 
 @Injectable()
 export class ProblemService {
@@ -24,7 +20,7 @@ export class ProblemService {
   ) {}
 
   async generateProblem(
-    user: any,
+    user: User,
     difficulty: number,
     category: Category,
   ): Promise<GeneratedProblem & ProblemSolutionOptions> {
@@ -60,32 +56,19 @@ export class ProblemService {
     return { ...generatedProblem, ...problemSolutionOptions };
   }
 
-  private async findProblemById(id: number): Promise<GeneratedProblem> {
+  async findProblemByIdAndUser(
+    problemId: number,
+    userId: number,
+    opts: { includeSolved: boolean },
+  ): Promise<GeneratedProblem> {
+    const filter = opts.includeSolved ? {} : { verdict: null };
     return await this.prisma.generatedProblem.findUniqueOrThrow({
-      where: { id },
+      where: {
+        id: problemId,
+        userAssignedId: userId,
+        ...filter,
+      },
     });
-  }
-
-  private async userAllowedToSolve(
-    user: User,
-    problem: GeneratedProblem,
-  ): Promise<boolean> {
-    return problem.userAssignedId === user.id;
-  }
-
-  private async judgePreCheck(
-    user: User,
-    problem: GeneratedProblem,
-  ): Promise<void> {
-    const allow = await this.userAllowedToSolve(user, problem);
-
-    if (!allow) {
-      throw new ForbiddenSolveProblem();
-    }
-
-    if (problem.verdict !== null) {
-      throw new ProblemAlreadyAttempted();
-    }
   }
 
   async judgeProblem(
@@ -93,14 +76,14 @@ export class ProblemService {
     problemId: number,
     problemSolution: string,
   ): Promise<SolutionVerdict> {
-    const problem = await this.findProblemById(problemId);
+    const problem = await this.findProblemByIdAndUser(problemId, user.id, {
+      includeSolved: false,
+    });
     const generator = await this.prisma.problemGenerator.findUniqueOrThrow({
       where: {
         id: problem.problemGeneratorId,
       },
     });
-
-    await this.judgePreCheck(user, problem);
 
     const { checkSolution, problemContentParser } =
       problemGenerators[generator.name];

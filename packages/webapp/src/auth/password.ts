@@ -5,9 +5,6 @@ export const hashIterations = 200_000;
 export const hashKeyLen = 32;
 export const pbkdf2Async = promisify(pbkdf2);
 
-// TODO: Keep reading:
-//       https://docs.nestjs.com/recipes/passport#implement-protected-route-and-jwt-strategy-guards
-
 export async function generatePassword(
   password: string,
 ): Promise<{ hashedPassword: string; salt: string }> {

@@ -33,6 +33,7 @@ describe(formatSumTerms.name, () => {
     expect(formatSumTerms([{ coef: 0, mult: '' }, { coef: 2, mult: 'a' }], { parenthesis: true })).toBe('2 * a')
     expect(formatSumTerms([{ coef: 0, mult: '' }, { coef: 0, mult: 'a' }], { parenthesis: true })).toBe('0')
     expect(formatSumTerms([{ coef: 1, mult: '' }, { coef: 2, mult: 'a' }], { parenthesis: true })).toBe('(1 + 2 * a)')
-    // TODO: Add a few more examples.
+    expect(formatSumTerms([{ coef: 1, mult: 'x' }], { parenthesis: true })).toBe('x')
+    expect(formatSumTerms([{ coef: 2, mult: 'x' }], { parenthesis: true })).toBe('2 * x')
   })
 })

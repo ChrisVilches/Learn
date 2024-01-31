@@ -8,7 +8,16 @@ const categorySchema = z.object({
   slug: z.string()
 })
 
+const categoryPreferencesSchema = z.object({
+  preferences: z.object({
+    difficulty: z.number().min(1).max(100)
+  })
+})
+
+const categoryWithPreferences = z.intersection(categorySchema, categoryPreferencesSchema)
+
 type Category = z.infer<typeof categorySchema>
+type CategoryWithPreferences = z.infer<typeof categoryWithPreferences>
 
 const problemGeneratorSchema = z.object({
   id: z.number(),
@@ -24,10 +33,10 @@ export async function fetchCategories (): Promise<Category[]> {
   return categorySchema.array().parse(result.data)
 }
 
-export async function fetchCategory (slug: string): Promise<Category> {
+export async function fetchCategory (slug: string): Promise<CategoryWithPreferences> {
   const result = await httpClientAuth.get(`/category/${slug}`)
 
-  return categorySchema.parse(result.data)
+  return categoryWithPreferences.parse(result.data)
 }
 
 export async function fetchCategoryGenerators (categorySlug: string): Promise<ProblemGenerator[]> {
@@ -40,4 +49,9 @@ export async function toggleEnabledProblemGenerator (id: number, enable: boolean
   const result = await httpClientAuth.put(`toggle-generator/${id}`, { enable })
 
   return problemGeneratorSchema.parse(result.data)
+}
+
+export async function saveDifficultyPreference (difficulty: number, categorySlug: string): Promise<void> {
+  const payload = { difficulty }
+  await httpClientAuth.put(`/category/${categorySlug}/preferences`, payload)
 }

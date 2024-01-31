@@ -5,18 +5,21 @@ import { useMutation, useQuery } from 'react-query'
 import { useCallback, useState } from 'react'
 import { apiErrorSchema } from '../api-client/http-client-auth'
 import { isUndefined } from 'lodash'
+import { ProblemHelp } from './problem-help'
 
-interface ProblemSolveProps {
+interface ProblemSolverProps {
   slug: string
   difficulty: number
+  onProblemAccepted: () => void
 }
 
-interface ProblemSolveInnerProps {
+interface ProblemSolverInnerProps {
   problem: Problem
   fetchNextProblem: () => void
+  onProblemAccepted: () => void
 }
 
-const ProblemSolveInner = ({ problem, fetchNextProblem }: ProblemSolveInnerProps): JSX.Element => {
+const ProblemSolverInner = ({ problem, fetchNextProblem, onProblemAccepted }: ProblemSolverInnerProps): JSX.Element => {
   const [verdict, setVerdict] = useState<'ok' | 'incorrect' | null>(null)
 
   const { isLoading: isSubmittingSolution, mutateAsync: judgeProblemAsync, isError: isJudgeProblemError, error: judgeProblemError } = useMutation(
@@ -26,6 +29,10 @@ const ProblemSolveInner = ({ problem, fetchNextProblem }: ProblemSolveInnerProps
       },
       onSuccess: ({ verdict }) => {
         setVerdict(verdict)
+
+        if (verdict === 'ok') {
+          onProblemAccepted()
+        }
       }
     }
   )
@@ -85,8 +92,8 @@ const ProblemSolveInner = ({ problem, fetchNextProblem }: ProblemSolveInnerProps
   )
 }
 
-export const ProblemSolve = ({ slug, difficulty }: ProblemSolveProps): JSX.Element => {
-  const { isFetching: isProblemLoading, isError, refetch, data } = useQuery(
+export const ProblemSolver = ({ slug, difficulty, onProblemAccepted }: ProblemSolverProps): JSX.Element => {
+  const { isFetching, isError, refetch, data } = useQuery(
     [generateNewProblem.name, slug],
     async () => await generateNewProblem(slug ?? '', difficulty)
   )
@@ -95,7 +102,7 @@ export const ProblemSolve = ({ slug, difficulty }: ProblemSolveProps): JSX.Eleme
     refetch().catch(console.error)
   }, [refetch])
 
-  if (isProblemLoading) {
+  if (isFetching) {
     return <span>Loading problem...</span>
   }
 
@@ -104,5 +111,10 @@ export const ProblemSolve = ({ slug, difficulty }: ProblemSolveProps): JSX.Eleme
     throw new Error()
   }
 
-  return <ProblemSolveInner problem={data} fetchNextProblem={fetchNextProblem}/>
+  return (
+    <>
+      <ProblemHelp problemId={data.id}/>
+      <ProblemSolverInner onProblemAccepted={onProblemAccepted} problem={data} fetchNextProblem={fetchNextProblem}/>
+    </>
+  )
 }

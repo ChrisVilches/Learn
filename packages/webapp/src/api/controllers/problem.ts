@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   Req,
@@ -22,15 +23,19 @@ import {
 } from '../schemas/problem-solution';
 import { ProblemService } from '../../logic/services/problem';
 import { Category, type GeneratedProblem } from '@prisma/client';
-import { SolutionVerdict } from 'problem-generator/dist/types/solution';
-import { ProblemSolutionOptions } from 'problem-generator/dist/types/problem';
+import { SolutionVerdict } from 'problem-generator';
+import { ProblemSolutionOptions } from 'problem-generator';
 import { JwtAuthGuard } from '../../auth/guards/jwt';
+import { CategoryService } from '../../logic/services/category';
 
 @Controller()
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(new ErrorMappingInterceptor())
 export class ProblemController {
-  constructor(private readonly problemService: ProblemService) {}
+  constructor(
+    private readonly problemService: ProblemService,
+    private readonly categoryService: CategoryService,
+  ) {}
 
   @Get('/new-problem/:category_slug')
   async newProblem(
@@ -68,6 +73,26 @@ export class ProblemController {
         problemId,
         solution,
       ),
+    };
+  }
+
+  @Get('/problem-help')
+  async getProblemHelp(
+    @Req() { user },
+    @Query('id', ParseIntPipe) problemId,
+  ): Promise<{ help: string }> {
+    const problem = await this.problemService.findProblemByIdAndUser(
+      problemId,
+      user.id,
+      { includeSolved: true },
+    );
+
+    const { help } = await this.categoryService.findGeneratorById(
+      problem.problemGeneratorId,
+    );
+
+    return {
+      help: help ?? '',
     };
   }
 }

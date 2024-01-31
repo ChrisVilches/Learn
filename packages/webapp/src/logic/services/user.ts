@@ -6,11 +6,14 @@ import { type User } from '@prisma/client';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findUserByEmail(email: string): Promise<User | null> {
-    return await this.prisma.user.findUnique({ where: { email } });
-  }
-
   async findUserByUsername(username: string): Promise<User | null> {
-    return await this.prisma.user.findUnique({ where: { username } });
+    return await this.prisma.user.findFirst({
+      where: {
+        username: {
+          mode: 'insensitive',
+          equals: username,
+        },
+      },
+    });
   }
 }

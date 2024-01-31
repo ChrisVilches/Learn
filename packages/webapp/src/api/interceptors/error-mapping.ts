@@ -4,21 +4,17 @@ import {
   type ExecutionContext,
   type NestInterceptor,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { type Observable, catchError } from 'rxjs';
 import { ZodError } from 'zod';
-import {
-  ForbiddenSolveProblem,
-  ProblemAlreadyAttempted,
-  SolutionCannotBeProcessed,
-} from '../../logic/problem-errors';
 import { ParseError } from 'problem-generator/dist/types/errors';
+import { ZodPipeError } from '../pipes/zod';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
+import { SolutionCannotBeProcessed } from '../../logic/problem-errors';
 
-// TODO: Note that this can also be errors from the problem generator parsing (problem-generator module),
-//       so sometimes it may leak keys like "correctAnswer" to the client, which shouldn't happen!!
-const handleZodError = ({ errors }: ZodError): void => {
-  throw new BadRequestException(errors);
+const handleZodPipeError = (e: ZodPipeError): void => {
+  throw new BadRequestException(e.zodError.errors);
 };
 
 const handlePrismaError = (err: PrismaClientKnownRequestError): void => {
@@ -32,18 +28,15 @@ export class ErrorMappingInterceptor implements NestInterceptor {
     return next.handle().pipe(
       catchError((err: unknown) => {
         if (err instanceof ZodError) {
-          handleZodError(err);
+          throw new InternalServerErrorException();
+        }
+
+        if (err instanceof ZodPipeError) {
+          handleZodPipeError(err);
         }
 
         if (err instanceof PrismaClientKnownRequestError) {
           handlePrismaError(err);
-        }
-
-        if (
-          err instanceof ForbiddenSolveProblem ||
-          err instanceof ProblemAlreadyAttempted
-        ) {
-          throw new BadRequestException(err.message);
         }
 
         if (err instanceof ParseError) {
