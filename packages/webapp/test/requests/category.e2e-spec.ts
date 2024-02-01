@@ -34,7 +34,7 @@ describe(CategoryService.name, () => {
       user = userResult.user;
       auth = userResult.auth;
 
-      category = await CategoryFactory.create({ slug: 'the-slug' })
+      category = await CategoryFactory.create({ slug: 'the-slug' });
     });
 
     it('rejects invalid keys', () =>

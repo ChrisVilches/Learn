@@ -4,12 +4,6 @@ echo "Database:"
 echo $DATABASE_URL
 DB_HOST=$(node -e "console.log((new URL(process.env.DATABASE_URL)).host)")
 
-# TODO: Things missing
-# * Explain that `docker compose` should work (i.e. correct Docker version)
-# * Execute `npx prisma generate`
-# * Compile `problem-generator` package
-# * Port may be already taken. Choose an even rarer port? Or make it random and then somehow use the same one for everything.
-
 docker compose -f docker-compose.test.yml up -d --wait
 
 postgres_ready() {

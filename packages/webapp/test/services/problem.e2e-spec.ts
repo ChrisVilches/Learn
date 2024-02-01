@@ -22,7 +22,7 @@ describe(ProblemService.name, () => {
             tex: `problem${i}`,
             verdict: [true, null][i],
             userAssigned: { connect: user },
-          })
+          }),
         ),
       );
     });

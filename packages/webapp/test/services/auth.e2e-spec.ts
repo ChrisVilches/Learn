@@ -10,7 +10,11 @@ describe(AuthService.name, () => {
   });
 
   it.skip('performs case-insensitive queries on username and email', async () => {
-    await authService.createNewUserRegistration('mail@gmail.com', 'user', 'pass');
+    await authService.createNewUserRegistration(
+      'mail@gmail.com',
+      'user',
+      'pass',
+    );
 
     await expect(
       authService.createNewUserRegistration('mail@Gmail.com', 'User', 'pass'),
