@@ -1,4 +1,5 @@
 .env
+src/__generated__
 
 # compiled output
 /dist

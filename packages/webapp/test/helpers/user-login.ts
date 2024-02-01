@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { User } from '@prisma/client';
-import { server } from './setup';
+import { app, httpServer } from './setup';
 import { AuthService } from '../../src/auth/services/auth';
 
 export type AuthFn = <T extends { set: (h: string, v: string) => T }>(
@@ -15,7 +15,7 @@ export async function createUserAndLogin(
   user: User;
   auth: AuthFn;
 }> {
-  const user = await server.app
+  const user = await app
     .get<AuthService>(AuthService)
     .createNewUserRegistration(email, username, password);
 
@@ -23,7 +23,7 @@ export async function createUserAndLogin(
     return req.set('Authorization', `Bearer ${body.accessToken}`);
   };
 
-  const { body } = await request(server.httpServer).post('/auth/login').send({
+  const { body } = await request(httpServer).post('/auth/login').send({
     username,
     password,
   });

@@ -1,10 +1,11 @@
 import * as request from 'supertest';
-import { server } from '../helpers/setup';
+import { httpServer } from '../helpers/setup';
 import prisma from '../helpers/prisma';
 import { Category, User } from '@prisma/client';
 import { CategoryService } from '../../src/logic/services/category';
 import { sample } from 'lodash';
 import { AuthFn, createUserAndLogin } from '../helpers/user-login';
+import { CategoryFactory } from '../helpers/factory';
 
 describe(CategoryService.name, () => {
   describe('setCategoryPreferences', () => {
@@ -33,24 +34,18 @@ describe(CategoryService.name, () => {
       user = userResult.user;
       auth = userResult.auth;
 
-      category = await prisma.category.create({
-        data: {
-          slug: 'slug',
-          name: 'name',
-          description: 'description',
-        },
-      });
+      category = await CategoryFactory.create({ slug: 'the-slug' })
     });
 
     it('rejects invalid keys', () =>
-      auth(request(server.httpServer).put('/category/slug/preferences'))
+      auth(request(httpServer).put('/category/slug/preferences'))
         .send({ someKey: 34 })
         .expect(400));
 
     it('accepts empty difficulty', async () => {
       expect(await getDifficulty()).toBeUndefined();
       const { body } = await auth(
-        request(server.httpServer).put('/category/slug/preferences'),
+        request(httpServer).put('/category/the-slug/preferences'),
       )
         .send({})
         .expect(200);
@@ -60,7 +55,7 @@ describe(CategoryService.name, () => {
     });
 
     it('rejects invalid difficulty', () =>
-      auth(request(server.httpServer).put('/category/slug/preferences'))
+      auth(request(httpServer).put('/category/slug/preferences'))
         .send({ difficulty: sample([-2, -1, 0, 101, 102]) })
         .expect(400));
   });

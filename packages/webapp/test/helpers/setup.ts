@@ -2,20 +2,22 @@ import { INestApplication } from '@nestjs/common';
 import { resetDb } from './reset-db';
 import { ApiModule } from '../../src/api/api-module';
 import { NestFactory } from '@nestjs/core';
+import { initialize } from "../../src/__generated__/fabbrica";
+import prisma from './prisma';
 
-export let server: { app: INestApplication; httpServer: any };
+initialize({ prisma });
+
+export let app: INestApplication
+export let httpServer: any // TODO: any
 
 beforeAll(async () => {
-  const app = await NestFactory.create(ApiModule, { logger: false });
+  app = await NestFactory.create(ApiModule, { logger: false });
   await app.listen(0);
-  server = {
-    app,
-    httpServer: app.getHttpServer(),
-  };
+  httpServer = app.getHttpServer();
 });
 
 afterAll(async () => {
-  await server.app.close();
+  await app.close();
 });
 
 beforeEach(async () => {

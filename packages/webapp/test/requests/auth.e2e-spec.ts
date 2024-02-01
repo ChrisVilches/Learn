@@ -1,10 +1,10 @@
 import * as request from 'supertest';
-import { server } from '../helpers/setup';
+import { app, httpServer } from '../helpers/setup';
 import { AuthService } from '../../src/auth/services/auth';
 
 describe('/auth/login', () => {
   it('rejects incorrect credentials', async () => {
-    const { body, status } = await request(server.httpServer)
+    const { body, status } = await request(httpServer)
       .post('/auth/login')
       .send({
         username: 'wrongusername',
@@ -17,7 +17,7 @@ describe('/auth/login', () => {
 
   describe('user exists', () => {
     beforeEach(async () => {
-      const authService = server.app.get<AuthService>(AuthService);
+      const authService = app.get<AuthService>(AuthService);
       await authService.createNewUserRegistration(
         'chris@mail.com',
         'chris',
@@ -26,7 +26,7 @@ describe('/auth/login', () => {
     });
 
     it('accepts correct credentials', async () => {
-      const { body } = await request(server.httpServer)
+      const { body } = await request(httpServer)
         .post('/auth/login')
         .send({
           username: 'chris',
@@ -38,7 +38,7 @@ describe('/auth/login', () => {
     });
 
     it('rejects email', async () => {
-      const { body } = await request(server.httpServer)
+      const { body } = await request(httpServer)
         .post('/auth/login')
         .send({
           username: 'chris@mail.com',
