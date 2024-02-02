@@ -7,6 +7,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useCallback, useEffect } from 'react'
 import Cookies from 'js-cookie'
 import toast, { Toaster } from 'react-hot-toast'
+import { setAccessToken } from '../util/auth'
 
 const formSchema = z.object({
   username: z.string().min(1, { message: 'Username is required' }),
@@ -40,7 +41,7 @@ export function Login (): JSX.Element {
     async ({ username, password }: { username: string, password: string }) => await loginService(username, password),
     {
       onSuccess: ({ accessToken }) => {
-        Cookies.set('accessToken', accessToken)
+        setAccessToken(accessToken)
         navigate('/categories')
       }
     }
