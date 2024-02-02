@@ -107,8 +107,7 @@ export const ProblemSolver = ({ slug, difficulty, onProblemAccepted }: ProblemSo
   }
 
   if (isError || isUndefined(data)) {
-    // TODO: Handle later. First I have to reproduce it. Use an ErrorBoundary?
-    throw new Error()
+    throw new Error('TODO: Handle later')
   }
 
   return (

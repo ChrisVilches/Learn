@@ -9,7 +9,7 @@ type LoginServiceResult = z.infer<typeof loginServiceResultSchema>
 
 export async function loginService (username: string, password: string): Promise<LoginServiceResult> {
   try {
-    const result = await axios.post('http://localhost:3000/auth/login', {
+    const result = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
       username,
       password
     })
@@ -20,7 +20,6 @@ export async function loginService (username: string, password: string): Promise
       throw new Error('Incorrect username or password')
     }
 
-    // TODO: Not sure how to structure the global error handling.
     throw new Error('There was an error')
   }
 }

@@ -46,7 +46,7 @@ export const ProblemGeneratorsConfiguration = ({ slug }: ProblemGeneratorsConfig
   }
 
   if (isError) {
-    throw new Error('Handle later')
+    throw new Error('TODO: Handle later')
   }
 
   return (

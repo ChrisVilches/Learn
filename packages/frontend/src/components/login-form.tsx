@@ -3,8 +3,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation } from 'react-query'
 import { loginService } from '../api-client/login'
-import { useNavigate } from 'react-router-dom'
-import { useCallback } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useCallback, useEffect } from 'react'
+import Cookies from 'js-cookie'
+import toast, { Toaster } from 'react-hot-toast'
 
 const formSchema = z.object({
   username: z.string().min(1, { message: 'Username is required' }),
@@ -23,13 +25,22 @@ export function Login (): JSX.Element {
     resolver: zodResolver(formSchema)
   })
 
+  const [searchParams] = useSearchParams()
+  const authError = searchParams.has('auth_error')
+
+  useEffect(() => {
+    if (authError) {
+      toast.error('Please login')
+    }
+  }, [authError])
+
   const navigate = useNavigate()
 
   const { mutateAsync } = useMutation(
     async ({ username, password }: { username: string, password: string }) => await loginService(username, password),
     {
       onSuccess: ({ accessToken }) => {
-        localStorage.setItem('accessToken', accessToken)
+        Cookies.set('accessToken', accessToken)
         navigate('/categories')
       }
     }
@@ -47,10 +58,12 @@ export function Login (): JSX.Element {
 
   return (
     <div>
+      <Toaster/>
+
       <div className='bg-slate-700 p-5 rounded-md mb-10'>
         <p className='text-lg font-bold mb-4'>Hint</p>
         Login using <span className='bg-slate-300 text-slate-600 p-1 rounded-md mx-2'>DefaultDummy</span>
-        with password <span className='bg-slate-300 text-slate-600 p-1 rounded-md mx-2'>pass</span> (fake login).
+        with password <span className='bg-slate-300 text-slate-600 p-1 rounded-md mx-2'>pass</span>.
       </div>
       {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
       <form onSubmit={handleSubmit(submit)}>

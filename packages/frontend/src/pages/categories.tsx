@@ -2,8 +2,6 @@ import { useQuery } from 'react-query'
 import { fetchCategories } from '../api-client/category'
 import { CategoryItem } from '../components/category-item'
 
-// TODO: Login guards are missing.
-
 export const CategoriesPage = (): JSX.Element => {
   const { isLoading, isError, data } = useQuery(fetchCategories.name, fetchCategories)
 
@@ -12,7 +10,7 @@ export const CategoriesPage = (): JSX.Element => {
   }
 
   if (isError) {
-    throw new Error('Handle later')
+    throw new Error('TODO: Handle later')
   }
 
   return (

@@ -5,6 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable, delay } from 'rxjs';
+import { random } from 'lodash';
 
 const DELAY_MS_MIN = +(process.env['REQUEST_DELAY_MS_MIN'] ?? 0);
 const DELAY_MS_MAX = +(process.env['REQUEST_DELAY_MS_MAX'] ?? 0);
@@ -12,8 +13,7 @@ const DELAY_MS_MAX = +(process.env['REQUEST_DELAY_MS_MAX'] ?? 0);
 const randomRange = (from: number, to: number) => {
   const a = Math.min(from, to);
   const b = Math.max(from, to);
-  const length = b - a;
-  return Math.round(Math.random() * length + a);
+  return random(a, b);
 };
 
 @Injectable()

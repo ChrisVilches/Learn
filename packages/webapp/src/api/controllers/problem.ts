@@ -27,8 +27,10 @@ import { SolutionVerdict } from 'problem-generator';
 import { ProblemSolutionOptions } from 'problem-generator';
 import { JwtAuthGuard } from '../../auth/guards/jwt';
 import { CategoryService } from '../../logic/services/category';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @Controller()
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(new ErrorMappingInterceptor())
 export class ProblemController {
@@ -38,6 +40,7 @@ export class ProblemController {
   ) {}
 
   @Get('/new-problem/:category_slug')
+  @ApiOperation({ summary: 'Generate a new problem' })
   async newProblem(
     @Req() { user },
     @Query(new ZodPipe(newProblemRequestOptionsSchema))
@@ -62,6 +65,7 @@ export class ProblemController {
   }
 
   @Post('/judge-problem')
+  @ApiOperation({ summary: 'Judge/verify a problem solution' })
   async judgeSolution(
     @Req() { user },
     @Body(new ZodPipe(problemSolutionSchema))
@@ -77,6 +81,7 @@ export class ProblemController {
   }
 
   @Get('/problem-help')
+  @ApiOperation({ summary: 'Gets a hint to solve the problem' })
   async getProblemHelp(
     @Req() { user },
     @Query('id', ParseIntPipe) problemId,

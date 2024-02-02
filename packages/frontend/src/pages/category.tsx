@@ -9,6 +9,8 @@ import { useQuery } from 'react-query'
 import { delayExecutionOnlyLast } from '../util/delay'
 import ConfettiExplosion from 'react-confetti-explosion'
 import { ProblemSolver } from '../components/problem-solver'
+import { CategoryNotFoundError } from '../errors'
+import toast, { Toaster } from 'react-hot-toast'
 
 interface DifficultyUpdate {
   slug: string
@@ -41,7 +43,8 @@ export const CategoryPage = (): JSX.Element => {
     {
       onSuccess: (category) => {
         setDifficulty(category.preferences.difficulty)
-      }
+      },
+      retry: false
     }
   )
 
@@ -56,16 +59,16 @@ export const CategoryPage = (): JSX.Element => {
   const [isExploding, setIsExploding] = useState(false)
 
   const onProblemAccepted = useCallback(() => {
+    toast.success('Correct answer!')
     setIsExploding(true)
   }, [])
 
-  if (isLoading || isUndefined(difficulty)) {
-    return <div>Loading category data...</div>
+  if (isError) {
+    throw new CategoryNotFoundError(slug)
   }
 
-  if (isError || isUndefined(category)) {
-    // TODO: Handle later. How can I handle all these globally?
-    throw new Error('Unhandled error')
+  if (isLoading || isUndefined(difficulty) || isUndefined(category)) {
+    return <div>Loading category data...</div>
   }
 
   return (
@@ -94,6 +97,7 @@ export const CategoryPage = (): JSX.Element => {
 
       {isExploding && <ConfettiExplosion onComplete={() => { setIsExploding(false) }} duration={2500} force={0.8} particleCount={70} particleSize={6}/>}
 
+      <Toaster/>
       <ProblemSolver onProblemAccepted={onProblemAccepted} slug={slug} difficulty={difficulty}/>
     </>
   )

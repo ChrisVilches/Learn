@@ -1,3 +1,3 @@
-import { Login } from '../components/login-form'
-
-export const HomePage = (): JSX.Element => <div><Login /></div>
+export const HomePage = (): JSX.Element => (
+  <div className='bg-yellow-500'>Welcome!</div>
+)
