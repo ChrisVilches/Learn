@@ -18,4 +18,9 @@ RUN npm run build --prefix packages/webapp
 # TODO: It should be possible to put this at the start of the file,
 #       but some build tasks fail.
 ENV NODE_ENV production
+
+# TODO: This should be executed individually (and only if it's necessary)
+RUN npx prisma migrate deploy
+RUN npx prisma db seed
+
 ENTRYPOINT ["npm", "run", "start:prod", "--prefix", "packages/webapp"]
