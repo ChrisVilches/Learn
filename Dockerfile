@@ -12,7 +12,6 @@ COPY package*.json ./
 RUN npm install
 RUN npx prisma generate --schema=./packages/webapp/prisma/schema.prisma
 
-COPY ./packages/webapp/.env ./packages/webapp
 RUN npm run build --prefix packages/problem-generator
 RUN npm run build --prefix packages/webapp
 
