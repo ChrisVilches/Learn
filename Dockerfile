@@ -28,4 +28,6 @@ FROM node:21-alpine as app
 ENV NODE_ENV production
 COPY --from=build . .
 WORKDIR /user/app/packages/webapp
+RUN apk add --no-cache python3 py3-pip
+RUN apk add py3-numpy
 ENTRYPOINT ["npm", "run", "start:prod"]
