@@ -10,13 +10,24 @@ Made with TypeScript, NestJS and React.
 
 ### Web App (NestJS)
 
-Example of how to deploy using Docker:
+Example of how to deploy using Docker.
+
+Setup database:
 
 ```sh
-docker build -t webapp .
+DATABASE_URL=postgresql://postgres:mypass@172.25.0.2:5432/learn_dev?schema=public
+SECRET_KEY=abcdefghijkl
+PYTHON_CMD=/usr/bin/python3
 
-# Use port 3007 on the host machine
-docker run -dit -p 3007:3000 --name webapp-production webapp
+docker build --target db -t webapp-setup .
+docker run --rm --env DATABASE_URL=$DATABASE_URL --network=custom_network1 webapp-setup
+```
+
+Run app:
+
+```sh
+docker build --target app -t webapp-run .
+docker run -dit -p 3007:3000 --env DATABASE_URL=$DATABASE_URL --env SECRET_KEY=$SECRET_KEY --env PYTHON_CMD=$PYTHON_CMD --network=custom_network1 --name webapp webapp-run
 ```
 
 ## Testing

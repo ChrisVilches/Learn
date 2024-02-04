@@ -1,6 +1,6 @@
 # TODO: This is for webapp only. Rename file accordingly?
 
-FROM node:21-alpine
+FROM node:21-alpine as build
 
 WORKDIR /user/app
 
@@ -15,12 +15,15 @@ RUN npx prisma generate --schema=./packages/webapp/prisma/schema.prisma --genera
 RUN npm run build --prefix packages/problem-generator
 RUN npm run build --prefix packages/webapp
 
+FROM node:21-alpine as db
+COPY --from=build . .
+WORKDIR /user/app/packages/webapp
+CMD npx prisma migrate deploy && npx prisma db seed
+
+FROM node:21-alpine as app
 # TODO: It should be possible to put this at the start of the file,
 #       but some build tasks fail.
 ENV NODE_ENV production
-
-# TODO: This should be executed individually (and only if it's necessary)
-RUN npx prisma migrate deploy
-RUN npx prisma db seed
-
-ENTRYPOINT ["npm", "run", "start:prod", "--prefix", "packages/webapp"]
+COPY --from=build . .
+WORKDIR /user/app/packages/webapp
+ENTRYPOINT ["npm", "run", "start:prod"]
