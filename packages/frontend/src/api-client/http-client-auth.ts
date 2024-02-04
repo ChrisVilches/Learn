@@ -1,7 +1,6 @@
 import axios, { type AxiosRequestTransformer } from 'axios'
-import Cookies from 'js-cookie'
 import { z } from 'zod'
-import { removeAccessToken } from '../util/auth'
+import { getAccessToken, removeAccessToken } from '../util/auth'
 
 export const httpClientAuth = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -11,8 +10,7 @@ export const httpClientAuth = axios.create({
   transformRequest: [
     ...axios.defaults.transformRequest as AxiosRequestTransformer[],
     function (data, headers) {
-      // TODO: Do this more safely (don't use localstorage/cookies).
-      const accessToken = Cookies.get('accessToken')
+      const accessToken = getAccessToken()
       headers.Authorization = `Bearer ${accessToken}`
       return data
     }
@@ -33,7 +31,8 @@ httpClientAuth.interceptors.response.use((response) => response, (error) => {
     //       403 -> don't redirect, just show error message.
     //       https://stackoverflow.com/questions/3297048/403-forbidden-vs-401-unauthorized-http-responses
 
-    // TODO: Possible error: It redirects to /login, but /login detects token is set,
+    // TODO: Possible error (SOLVED, but verify this is how the error was solved
+    //       and not due to some false positive / true negative): It redirects to /login, but /login detects token is set,
     //       therefore it redirects to / (user home), but user home performs some query
     //       (at this moment I haven't done any query) and it errors and redirects again
     //       to login.

@@ -4,6 +4,8 @@ import { AuthModule } from '../src/auth/auth-module';
 import { AuthService } from '../src/auth/services/auth';
 import { INestApplication } from '@nestjs/common';
 
+// TODO: Seed the help as well.
+
 const prisma = new PrismaClient();
 let app: INestApplication;
 
@@ -27,9 +29,15 @@ async function main(): Promise<void> {
         'Linear algebra is the branch of mathematics concerning linear equations, linear maps and their representations in vector spaces and through matrices.',
       problemGenerators: {
         create: [
-          { name: 'matrix-basic' },
-          { name: 'matrix-inversion' },
-          { name: 'matrix-rank' },
+          {
+            name: 'matrix-basic',
+            help: 'Type the matrix using only numbers, such as: 1 2 3\n4 5 6',
+          },
+          {
+            name: 'matrix-inversion',
+            help: 'Example of allowed syntax: (1/2) * [[1, 2, 3], [4, 5, 6]]',
+          },
+          { name: 'matrix-rank', help: 'Type the rank of the matrix' },
         ],
       },
     },

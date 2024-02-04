@@ -1,16 +1,14 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { GlobalError } from './components/errors/global-error'
-import { CategoriesPage } from './pages/categories'
 import { CategoryPage } from './pages/category'
-import { HomePage } from './pages/home'
 import { LoginPage } from './pages/login'
 import { loginLoader, authProtectedLoader, logoutLoader } from './util/routing'
 import { NotFoundPage } from './pages/not-found'
 import { Layout } from './components/layouts/layout'
+import { HomePage } from './pages/home'
 
 const protectedRoutes = [
   { path: '/', Component: HomePage },
-  { path: '/categories', Component: CategoriesPage },
   { path: '/category/:slug/solve', Component: CategoryPage }
 ]
 

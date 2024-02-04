@@ -4,7 +4,6 @@ import { AuthController } from './controllers/auth';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt';
 import { LocalStrategy } from './strategies/local';
-import { secretKey } from './constants';
 import { LogicModule } from '../logic/logic-module';
 import { AuthService } from './services/auth';
 
@@ -14,7 +13,7 @@ import { AuthService } from './services/auth';
     PassportModule,
     LogicModule,
     JwtModule.register({
-      secret: secretKey,
+      secret: process.env.SECRET_KEY,
       // TODO: Article about token refreshing, and why expiration should be short:
       //       https://security.stackexchange.com/questions/119371/is-refreshing-an-expired-jwt-token-a-good-strategy
       //       NOTE: Low priority, since I'm not going to implement a full login system yet.

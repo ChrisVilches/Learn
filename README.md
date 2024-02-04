@@ -1,5 +1,24 @@
 # Learn App
 
+Learning app. Generates math problems and tests your skills.
+
+It works similar to an online judge. Problems are generated based on chosen topic.
+
+Made with TypeScript, NestJS and React.
+
+## Deployment
+
+### Web App (NestJS)
+
+Example of how to deploy using Docker:
+
+```sh
+docker build -t webapp .
+
+# Use port 3007 on the host machine
+docker run -dit -p 3007:3000 --name webapp-production webapp
+```
+
 ## Testing
 
 ### `problem-generator` unit tests

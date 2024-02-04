@@ -13,12 +13,24 @@ interface ProblemGeneratorItemConfigProps {
 
 const ProblemGeneratorItemConfig = ({ id, name, enabled, toggle, toggleDisabled }: ProblemGeneratorItemConfigProps): JSX.Element => {
   return (
-    <div>
-      <button onClick={toggle} data-generator-id={id} disabled={toggleDisabled} className={enabled ? '' : 'opacity-50'}>
+    <span className="relative inline-flex mr-2">
+      <button
+        onClick={toggle}
+        data-generator-id={id}
+        disabled={toggleDisabled}
+        className={`text-sm p-2 my-1 rounded-md transition-colors duration-300 bg-black border-[1px] border-black hover:border-yellow-300 ${enabled ? '' : 'bg-gray-800 border-gray-800 text-gray-400'}`}
+      >
         {name}
-        {toggleDisabled ? 'Updating...' : ''}
       </button>
-    </div>
+      {toggleDisabled
+        ? (
+          <span className="flex absolute h-3 w-3 top-0 right-0 -mt-1 -mr-1">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
+          </span>
+          )
+        : ''}
+    </span>
   )
 }
 
@@ -42,6 +54,7 @@ export const ProblemGeneratorsConfiguration = ({ slug }: ProblemGeneratorsConfig
   }, [toggleGeneratorAsync, isGeneratorEnabled])
 
   if (isLoading) {
+    // TODO: Improve loader.
     return <span>Loading generators...</span>
   }
 

@@ -6,6 +6,8 @@ import { useCallback, useState } from 'react'
 import { apiErrorSchema } from '../api-client/http-client-auth'
 import { isUndefined } from 'lodash'
 import { ProblemHelp } from './problem-help'
+import { ProblemSkeleton } from './loaders/problem-skeleton'
+import { Spinner } from './loaders/spinner'
 
 interface ProblemSolverProps {
   slug: string
@@ -56,38 +58,61 @@ const ProblemSolverInner = ({ problem, fetchNextProblem, onProblemAccepted }: Pr
     fetchNextProblem()
   }, [fetchNextProblem, resetForm])
 
+  // TODO: must disable buttons when submitting solution.
   const submitButtonDisabled = verdict !== null || solution.trim().length === 0
   const choiceButtonsDisabled = verdict !== null
 
   return (
     <div>
-      <MathJax inline={true}>
-        {`\\(${problem.tex}\\)`}
-      </MathJax>
+      <div className="text-center mb-4">
+        <MathJax inline={true}>
+          {`\\(${problem.tex}\\)`}
+        </MathJax>
 
-      <SolutionInput onChange={setSolution} value={solution}/>
+        <div className="my-4 empty:hidden">
+          {verdict === 'ok' && <p className="font-semibold text-green-700">Accepted</p>}
+          {verdict === 'incorrect' && <p className="font-semibold text-red-700">Wrong Answer</p>}
+          {isJudgeProblemError && <div className="font-semibold text-orange-700">{apiErrorSchema.parse(judgeProblemError).message}</div>}
+        </div>
+      </div>
 
-      {problem.freeInput
-        ? <button onClick={() => { submitSolution(solution) }} disabled={submitButtonDisabled} className="disabled:bg-gray-400">
-          Submit
-        </button>
-        : ''}
+      {problem.freeInput && <SolutionInput disabled={verdict !== null} className="my-4" onChange={setSolution} value={solution}/>}
 
-      {problem.choiceAnswers.map(({ label, result }, idx) => (
-        <button onClick={() => { submitSolution(result) }} key={idx} disabled={choiceButtonsDisabled} className="disabled:bg-gray-400">
-          {label}
-        </button>
-      ))}
+      <div className="flex place-items-center">
+        <div className="flex space-x-4">
+          {problem.freeInput
+            ? (
+              <button
+                onClick={() => { submitSolution(solution) }}
+                disabled={submitButtonDisabled}
+                className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800 disabled:bg-gray-600 disabled:text-gray-200"
+              >
+                Submit
+              </button>
+              )
+            : ''}
 
-      <button onClick={getNextProblem}>
-        {verdict === null ? 'Skip' : 'Next problem'}
-      </button>
+          {problem.choiceAnswers.map(({ label, result }, idx) => (
+            <button
+              key={idx}
+              className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800 disabled:bg-gray-600 disabled:text-gray-200"
+              onClick={() => { submitSolution(result) }}
+              disabled={choiceButtonsDisabled}
+            >
+              {label}
+            </button>
+          ))}
 
-      {isSubmittingSolution ? 'Submitting...' : ''}
+          {verdict === null && <button className="p-4 duration-200 transition-colors rounded-md hover:bg-violet-900" onClick={getNextProblem}>Skip</button>}
+          {verdict !== null && <button className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800" onClick={getNextProblem}>Next problem</button>}
+        </div>
 
-      {isJudgeProblemError ? <div className="bg-red-200">{apiErrorSchema.parse(judgeProblemError).message}</div> : ''}
+        {isSubmittingSolution ? <Spinner/> : ''}
 
-      {verdict === null ? '' : <p>Verdict: {verdict}</p> }
+        <div className="flex place-content-end grow">
+          <ProblemHelp problemId={problem.id}/>
+        </div>
+      </div>
     </div>
   )
 }
@@ -103,7 +128,7 @@ export const ProblemSolver = ({ slug, difficulty, onProblemAccepted }: ProblemSo
   }, [refetch])
 
   if (isFetching) {
-    return <span>Loading problem...</span>
+    return <ProblemSkeleton/>
   }
 
   if (isError || isUndefined(data)) {
@@ -111,9 +136,6 @@ export const ProblemSolver = ({ slug, difficulty, onProblemAccepted }: ProblemSo
   }
 
   return (
-    <>
-      <ProblemHelp problemId={data.id}/>
-      <ProblemSolverInner onProblemAccepted={onProblemAccepted} problem={data} fetchNextProblem={fetchNextProblem}/>
-    </>
+    <ProblemSolverInner onProblemAccepted={onProblemAccepted} problem={data} fetchNextProblem={fetchNextProblem}/>
   )
 }

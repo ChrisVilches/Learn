@@ -5,7 +5,6 @@ import { useMutation } from 'react-query'
 import { loginService } from '../api-client/login'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useCallback, useEffect } from 'react'
-import Cookies from 'js-cookie'
 import toast, { Toaster } from 'react-hot-toast'
 import { setAccessToken } from '../util/auth'
 
@@ -21,8 +20,13 @@ export function Login (): JSX.Element {
     register,
     handleSubmit,
     setError,
-    formState: { isSubmitting, errors }
+    formState: { isSubmitting, errors, isValid }
   } = useForm<FormData>({
+    mode: 'onBlur',
+    defaultValues: {
+      username: 'DefaultDummy',
+      password: 'pass'
+    },
     resolver: zodResolver(formSchema)
   })
 
@@ -42,7 +46,7 @@ export function Login (): JSX.Element {
     {
       onSuccess: ({ accessToken }) => {
         setAccessToken(accessToken)
-        navigate('/categories')
+        navigate('/')
       }
     }
   )
@@ -57,14 +61,15 @@ export function Login (): JSX.Element {
     }
   }, [mutateAsync, setError])
 
+  const isSubmitDisabled = isSubmitting || !isValid
+
   return (
     <div>
       <Toaster/>
 
       <div className='bg-slate-700 p-5 rounded-md mb-10'>
         <p className='text-lg font-bold mb-4'>Hint</p>
-        Login using <span className='bg-slate-300 text-slate-600 p-1 rounded-md mx-2'>DefaultDummy</span>
-        with password <span className='bg-slate-300 text-slate-600 p-1 rounded-md mx-2'>pass</span>.
+        Login with the default form values.
       </div>
       {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
       <form onSubmit={handleSubmit(submit)}>
@@ -80,8 +85,8 @@ export function Login (): JSX.Element {
 
         <p className='bg-red-500 rounded-md p-5 empty:hidden'>{errors.root?.message}</p>
 
-        <button type="submit">
-          {isSubmitting ? 'Loading...' : 'Login'}
+        <button type="submit" disabled={isSubmitDisabled} className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800 disabled:bg-gray-600 disabled:text-gray-200">
+          {isSubmitting ? 'Wait...' : 'Login'}
         </button>
       </form>
 

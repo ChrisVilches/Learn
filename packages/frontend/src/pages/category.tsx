@@ -11,6 +11,8 @@ import ConfettiExplosion from 'react-confetti-explosion'
 import { ProblemSolver } from '../components/problem-solver'
 import { CategoryNotFoundError } from '../errors'
 import toast, { Toaster } from 'react-hot-toast'
+import { DifficultyText } from '../components/difficulty-text'
+import { Spinner } from '../components/loaders/spinner'
 
 interface DifficultyUpdate {
   slug: string
@@ -68,37 +70,47 @@ export const CategoryPage = (): JSX.Element => {
   }
 
   if (isLoading || isUndefined(difficulty) || isUndefined(category)) {
-    return <div>Loading category data...</div>
+    return (
+      <div className="flex justify-center">
+        <Spinner/>
+      </div>
+    )
   }
 
   return (
     <>
-      <div>
-        <CategoryInformation
-          name={category.name}
-          description={category.description}
-          slug={slug}
-          className='mb-10'/>
-      </div>
-      <div>
-        Difficulty:
-        <Slider
-          min={1}
-          max={100}
-          onChange={onChangeDifficulty}
-          onChangeCommitted={onChangeCommittedDifficulty}
-          value={difficulty}
-          slotProps={slotProps}
-        />
-      </div>
-      <div>
-        <ProblemGeneratorsConfiguration slug={slug ?? ''}/>
-      </div>
+      <div className="grid grid-cols-10 gap-4">
+        <div className="col-span-6 bg-gray-900 p-4 rounded-lg">
+          <CategoryInformation
+            name={category.name}
+            description={category.description}
+            slug={slug}
+            className='mb-10'/>
+        </div>
 
-      {isExploding && <ConfettiExplosion onComplete={() => { setIsExploding(false) }} duration={2500} force={0.8} particleCount={70} particleSize={6}/>}
+        <div className="col-span-4 bg-gray-900 p-4 rounded-lg">
+          <DifficultyText className="mb-6 float-end" difficulty={difficulty}/>
+          <Slider
+            className="mb-8"
+            min={1}
+            max={100}
+            onChange={onChangeDifficulty}
+            onChangeCommitted={onChangeCommittedDifficulty}
+            value={difficulty}
+            slotProps={slotProps}
+          />
 
+          <ProblemGeneratorsConfiguration slug={slug ?? ''}/>
+        </div>
+      </div>
       <Toaster/>
-      <ProblemSolver onProblemAccepted={onProblemAccepted} slug={slug} difficulty={difficulty}/>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        {isExploding && <ConfettiExplosion onComplete={() => { setIsExploding(false) }} duration={2500} force={0.8} particleCount={70} particleSize={6}/>}
+      </div>
+
+      <div className="my-10">
+        <ProblemSolver onProblemAccepted={onProblemAccepted} slug={slug} difficulty={difficulty}/>
+      </div>
     </>
   )
 }
