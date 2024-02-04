@@ -26,6 +26,7 @@ FROM node:21-alpine as app
 # TODO: It should be possible to put this at the start of the file,
 #       but some build tasks fail.
 ENV NODE_ENV production
+ENV PYTHON_CMD /usr/bin/python3
 COPY --from=build . .
 WORKDIR /user/app/packages/webapp
 RUN apk add --no-cache python3 py3-pip
