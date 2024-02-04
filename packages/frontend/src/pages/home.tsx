@@ -1,33 +1,22 @@
 import { CategoryList } from '../components/category-list'
-import {
-  Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip
-} from 'chart.js'
 import CalendarHeatmap from 'react-calendar-heatmap'
 import 'react-calendar-heatmap/dist/styles.css'
 import { type CalendarHeatDatamap, getRecentActivity, getUserProfile } from '../api-client/user'
 import { useQuery } from 'react-query'
 import { useMemo } from 'react'
-import { isUndefined, isNil } from 'lodash'
+import { isUndefined, isObject } from 'lodash'
 import { Spinner } from '../components/loaders/spinner'
 
-ChartJS.register(
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip
-)
+function hasCount (x: unknown): x is { count: number } {
+  return isObject(x) && 'count' in x
+}
 
-function calendarClassForValue (value?: { count: number }): string {
-  if (isNil(value)) {
-    return 'color-empty'
+// classForValue?: ((value: ReactCalendarHeatmapValue<T> | undefined) => string) | undefined
+function calendarClassForValue (value: unknown): string {
+  if (hasCount(value)) {
+    return `color-scale-${value.count}`
   }
-  return `color-scale-${value.count}`
+  return 'color-empty'
 }
 
 function getDayFrom (date: Date, days: number): Date {
@@ -62,6 +51,8 @@ export const HomePage = (): JSX.Element => {
     }
     return buildCalendarData(recentActivity.calendar)
   }, [recentActivity])
+  // TODO: Remove this print
+  console.log(isRecentActivityLoading, calendarDataChart, CalendarHeatmap, calendarClassForValue)
 
   // TODO: Maybe load the profile in the Route loader? Just for education.
 
@@ -83,11 +74,11 @@ export const HomePage = (): JSX.Element => {
       <div className='mb-8'>Welcome, <b>{userProfile?.username}</b>!</div>
 
       <div className="md:grid md:grid-cols-2 md:gap-8 mb-8">
-        <div>
+        {/* <div>
           {isRecentActivityLoading || (
             <CalendarHeatmap {...calendarDataChart} classForValue={calendarClassForValue}/>
           )}
-        </div>
+        </div> */}
       </div>
 
       <CategoryList/>

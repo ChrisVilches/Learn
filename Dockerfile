@@ -1,4 +1,6 @@
 # TODO: This is for webapp only. Rename file accordingly?
+# TODO: Instead of "webapp" use the app name (i.e. currently "learn") since in `docker images`
+#       and `docker ps` it's a bit vague.
 
 FROM node:21-alpine as build
 
