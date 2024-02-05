@@ -12,7 +12,7 @@ import { ProblemSolver } from '../components/problem-solver'
 import { CategoryNotFoundError } from '../errors'
 import toast, { Toaster } from 'react-hot-toast'
 import { DifficultyText } from '../components/difficulty-text'
-import { Spinner } from '../components/loaders/spinner'
+import { TextSkeleton } from '../components/loaders/text-skeleton'
 
 interface DifficultyUpdate {
   slug: string
@@ -33,6 +33,20 @@ const slotProps = {
   track: { className: 'bg-slate-500 dark:bg-slate-400 h-2 absolute rounded-full' },
   thumb: { className: 'ring-slate-500 dark:ring-slate-400 ring-2 w-4 h-4 -mt-1 -ml-2 flex items-center justify-center bg-white rounded-full shadow absolute' }
 }
+
+const CategoryPageSkeleton = (): JSX.Element => (
+  <div className="flex justify-center">
+    <div className="grid grid-cols-10 gap-4 w-full">
+      <div className="col-span-10 md:col-span-6 bg-gray-900 p-4 rounded-lg animate-pulse">
+        <TextSkeleton variant="small" lines={8}/>
+      </div>
+
+      <div className="col-span-10 md:col-span-4 bg-gray-900 p-4 rounded-lg w-full animate-pulse">
+      <TextSkeleton variant="medium" lines={4}/>
+      </div>
+    </div>
+  </div>
+)
 
 export const CategoryPage = (): JSX.Element => {
   const { slug = '' } = useParams()
@@ -70,11 +84,7 @@ export const CategoryPage = (): JSX.Element => {
   }
 
   if (isLoading || isUndefined(difficulty) || isUndefined(category)) {
-    return (
-      <div className="flex justify-center">
-        <Spinner/>
-      </div>
-    )
+    return <CategoryPageSkeleton/>
   }
 
   return (
