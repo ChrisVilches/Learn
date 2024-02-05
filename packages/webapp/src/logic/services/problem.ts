@@ -60,7 +60,12 @@ export class ProblemService {
     const fromDate = new Date();
     fromDate.setDate(fromDate.getDate() - daysAgo);
 
-    // TODO: Improve this query.
+    // TODO: Either improve this query, or turn this process into a job that
+    //       does some data pre-processing and stores it in a fast to read way.
+    //       Alternatives:
+    //       (1) Periodically check users that can be updated.
+    //       (2) Create a stream of solved problems, and have one or multiple workers reading
+    //           from the stream, processing and storing the data.
     const all = await this.prisma.generatedProblem.findMany({
       select: {
         createdAt: true,

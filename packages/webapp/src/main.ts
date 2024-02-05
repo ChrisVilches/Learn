@@ -3,6 +3,7 @@ import { ApiModule } from './api/api-module';
 import { DelayInterceptor } from './api/interceptors/delay';
 import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { isString, isEmpty } from 'lodash'
 
 // TODO: I'd like to revamp some of the code using Zod using this:
 //       https://github.com/risen228/nestjs-zod
@@ -21,6 +22,10 @@ async function bootstrap(): Promise<void> {
   if (process.env.NODE_ENV === 'development') {
     app.enableCors();
     app.useGlobalInterceptors(new DelayInterceptor());
+  }
+
+  if (isString(process.env.ALLOW_HOST) && !isEmpty(process.env.ALLOW_HOST)) {
+    app.enableCors({ origin: process.env.ALLOW_HOST });
   }
 
   const config = new DocumentBuilder()

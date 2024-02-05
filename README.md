@@ -26,7 +26,7 @@ Run app:
 
 ```sh
 docker build --target app -t webapp-run .
-docker run -dit -p 3007:3000 --env DATABASE_URL=$DATABASE_URL --env SECRET_KEY=$SECRET_KEY --env --network=custom_network1 --name webapp webapp-run
+docker run -dit -p 3007:3000 --env DATABASE_URL=$DATABASE_URL --env SECRET_KEY=$SECRET_KEY --network=custom_network1 --name webapp webapp-run
 ```
 
 ## Testing
