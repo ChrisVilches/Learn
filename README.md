@@ -1,5 +1,7 @@
 # Learn App
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/4181054b-f24b-4bb3-8124-bd493304b60e/deploy-status)](https://app.netlify.com/sites/chrisvilches-learn/deploys)
+
 Learning app. Generates math problems and tests your skills.
 
 It works similar to an online judge. Problems are generated based on chosen topic.
