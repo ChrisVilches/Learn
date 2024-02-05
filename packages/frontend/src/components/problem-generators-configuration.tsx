@@ -11,6 +11,10 @@ interface ProblemGeneratorItemConfigProps {
   toggleDisabled: boolean
 }
 
+// TODO: I should extract the component of the button, and turn it into another component.
+//       Then both the actual button and the skeleton should be made using that component.
+//       (low priority)
+
 const ProblemGeneratorItemConfig = ({ id, name, enabled, toggle, toggleDisabled }: ProblemGeneratorItemConfigProps): JSX.Element => {
   return (
     <span className="relative inline-flex mr-2">
@@ -18,7 +22,7 @@ const ProblemGeneratorItemConfig = ({ id, name, enabled, toggle, toggleDisabled 
         onClick={toggle}
         data-generator-id={id}
         disabled={toggleDisabled}
-        className={`text-sm p-2 my-1 rounded-md transition-colors duration-300 bg-black border-[1px] border-black hover:border-yellow-300 ${enabled ? '' : 'bg-gray-800 border-gray-800 text-gray-400'}`}
+        className={`text-sm p-2 h-10 my-1 rounded-md transition-colors duration-300 bg-black border-[1px] border-black hover:border-yellow-300 ${enabled ? '' : 'bg-gray-800 border-gray-800 text-gray-400'}`}
       >
         {name}
       </button>
@@ -55,7 +59,15 @@ export const ProblemGeneratorsConfiguration = ({ slug }: ProblemGeneratorsConfig
 
   if (isLoading) {
     // TODO: Improve loader.
-    return <span>Loading generators...</span>
+    return (
+      <>
+        {['w-[70px]', 'w-[60px]', 'w-[95px]'].map((width, idx) => (
+          <span key={idx} className="relative inline-flex mr-2">
+            <div className={`p-2 h-10 ${width} my-1 rounded-md transition-colors duration-300 bg-slate-800 border-[1px] border-slate-800 animate-pulse`}/>
+          </span>
+        ))}
+      </>
+    )
   }
 
   if (isError) {

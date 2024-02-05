@@ -15,25 +15,27 @@ function guessIcon (slug: string): JSX.Element {
   return <SiKnowledgebase/>
 }
 
+const CategoryListSkeleton = (): JSX.Element => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
+    {[0, 1, 2].map((idx) => (
+      <div key={idx} className="p-4 bg-violet-900 text-gray-300 rounded-xl">
+        <div className="font-bold text-xl mb-6"><Spinner /></div>
+        <div className="flex space-x-8">
+          <div>
+            <div className="bg-gray-800 rounded-lg w-12 h-12"></div>
+          </div>
+          <TextSkeleton lines={6} variant="small" />
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 export const CategoryList = (): JSX.Element => {
   const { isLoading, isError, data } = useQuery(fetchCategories.name, fetchCategories)
 
   if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
-        {[0, 1, 2].map((idx) => (
-          <div key={idx} className="p-4 bg-violet-900 text-gray-300 rounded-xl">
-            <div className="font-bold text-xl mb-6"><Spinner/></div>
-            <div className="flex space-x-8">
-              <div>
-                <div className="bg-gray-800 rounded-lg w-12 h-12"></div>
-              </div>
-              <TextSkeleton lines={6} variant="small"/>
-            </div>
-          </div>
-        ))}
-      </div>
-    )
+    return <CategoryListSkeleton/>
   }
 
   if (isError) {
