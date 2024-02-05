@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, redirect, defer } from 'react-router-dom'
+import { type LoaderFunctionArgs, redirect, defer, type LoaderFunction } from 'react-router-dom'
 import { isAccessTokenSet, removeAccessToken } from './auth'
 import { getUserProfile } from '../api-client/user'
 
@@ -17,7 +17,7 @@ export function authProtectedLoader (_args: LoaderFunctionArgs): Response | null
   return null
 }
 
-export function authLayoutLoader (): unknown {
+export const authLayoutLoader: LoaderFunction = () => {
   if (!isAccessTokenSet()) {
     // TODO: This has to be returned (a promise that never resolves)
     //       because the layout dynamically select the auth layout or normal layout.

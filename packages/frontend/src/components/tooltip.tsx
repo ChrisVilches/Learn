@@ -2,7 +2,7 @@ import { useDismiss, useFloating, useFocus, useHover, useInteractions, useRole, 
 import { type ReactNode, useState, type ReactElement } from 'react'
 
 interface TooltipProps {
-  children: (props: unknown) => ReactElement
+  children: (props: object) => ReactElement
   label: ReactNode
 }
 
