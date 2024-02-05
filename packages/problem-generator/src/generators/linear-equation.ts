@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { equalClose } from '../util/misc'
 import { parseMathOrThrow } from '../util/parse'
 import _ from 'lodash'
+import { formatSumTerms } from '../util/algebra'
 
 const solutionSchema = z.literal('multiple').or(z.literal('none')).or(z.string().transform(parseMathOrThrow))
 
@@ -81,8 +82,11 @@ function getSolutionType (leftSide: MathNode, rightSide: MathNode): z.infer<type
 }
 
 export function linearEquationProblemFromParameters (m0: number, b0: number, m1: number, b1: number): Problem {
-  const leftSide = parse(`${m0}x + ${b0}`)
-  const rightSide = parse(`${m1}x + ${b1}`)
+  const leftTerms = _.shuffle([{ coef: m0, mult: 'x' }, { coef: b0, mult: '' }])
+  const rightTerms = _.shuffle([{ coef: m1, mult: 'x' }, { coef: b1, mult: '' }])
+
+  const leftSide = parse(formatSumTerms(leftTerms))
+  const rightSide = parse(formatSumTerms(rightTerms))
 
   return {
     tex: `${leftSide.toTex()} = ${rightSide.toTex()}`,

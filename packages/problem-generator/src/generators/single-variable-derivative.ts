@@ -1,5 +1,5 @@
 import { parse, derivative, type MathNode, simplify } from 'mathjs'
-import { multipleEvalEqual, symbolicEqual } from '../util/misc'
+import { implicitMultiplication, multipleEvalEqual, symbolicEqual } from '../util/misc'
 import { z } from 'zod'
 import { type ProblemGenerator } from '../types/problem'
 import { createPolynomial } from '../util/algebra'
@@ -26,7 +26,7 @@ export const singleVariableDerivative: ProblemGenerator = {
 
     return {
       debugInformation: statement.toString(),
-      tex: `\\dfrac{d}{dx}~${statement.toTex()}`,
+      tex: `\\dfrac{d}{dx}~${implicitMultiplication(statement).toTex()}`,
       content: {
         correctAnswer: correctAnswer.toString()
       }
