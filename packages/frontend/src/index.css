@@ -17,6 +17,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.help-markdown pre {
+  @apply bg-slate-800;
+  @apply p-2;
+  @apply rounded-md;
+  @apply my-4;
+  @apply overflow-x-auto;
+}
+
+.help-markdown p {
+  @apply my-4;
+}
+
+.react-calendar-heatmap .color-scale-0 { fill: #000000; }
 .react-calendar-heatmap .color-scale-1 { fill: #d6e685; }
 .react-calendar-heatmap .color-scale-2 { fill: #8cc665; }
 .react-calendar-heatmap .color-scale-3 { fill: #44a340; }

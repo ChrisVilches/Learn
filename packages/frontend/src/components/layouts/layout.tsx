@@ -9,6 +9,10 @@ export function Layout (): JSX.Element {
   if (isAccessTokenSetSignal.value) {
     return <AuthLayout/>
   } else {
-    return <Outlet/>
+    return (
+      <main>
+        <Outlet/>
+      </main>
+    )
   }
 }

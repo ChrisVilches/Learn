@@ -14,6 +14,9 @@ const protectedRoutes = [
 
 const routes = [
   { path: '/login', loader: loginLoader, Component: LoginPage },
+
+  // TODO: Logout is broken. It triggers some queries (that throw 401) and redirects to the login
+  //       page with an error message. This happens when clicking the button at the top.
   { path: '/logout', loader: logoutLoader },
   { loader: authProtectedLoader, children: protectedRoutes },
   { path: '*', Component: NotFoundPage }

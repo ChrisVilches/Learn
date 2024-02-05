@@ -7,8 +7,6 @@ generator client {
 
 generator fabbrica {
   provider = "prisma-fabbrica"
-  // TODO: This should be removed
-  tsconfig = "../tsconfig.json"
 }
 
 datasource db {

@@ -103,7 +103,7 @@ const ProblemSolverInner = ({ problem, fetchNextProblem, onProblemAccepted }: Pr
             </button>
           ))}
 
-          {verdict === null && <button className="p-4 duration-200 transition-colors rounded-md hover:bg-violet-900" onClick={getNextProblem}>Skip</button>}
+          {verdict === null && <button className="p-4 duration-200 transition-colors rounded-md bg-slate-900 hover:bg-purple-900" onClick={getNextProblem}>Skip</button>}
           {verdict !== null && <button className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800" onClick={getNextProblem}>Next problem</button>}
         </div>
 

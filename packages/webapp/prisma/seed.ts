@@ -31,13 +31,13 @@ async function main(): Promise<void> {
         create: [
           {
             name: 'matrix-basic',
-            help: 'Type the matrix using only numbers, such as: 1 2 3\n4 5 6',
+            help: 'Type the result matrix using only numbers, such as:\n```\n1 2 3\n4 5 6\n```',
           },
           {
             name: 'matrix-inversion',
-            help: 'Example of allowed syntax: (1/2) * [[1, 2, 3], [4, 5, 6]]',
+            help: 'Example of allowed syntax:\n```\n(1/2) * [[1, 2, 3], [4, 5, 6]]\n```',
           },
-          { name: 'matrix-rank', help: 'Type the rank of the matrix' },
+          { name: 'matrix-rank', help: 'Enter the rank of the matrix' },
         ],
       },
     },
@@ -69,7 +69,13 @@ async function main(): Promise<void> {
       description:
         'Algebra is the study of variables and the rules for manipulating these variables in formulas.',
       problemGenerators: {
-        create: [{ name: 'quadratic-equation' }, { name: 'linear-equation' }],
+        create: [
+          {
+            name: 'quadratic-equation',
+            help: 'Enter two solutions separated by a comma (if they are the same, just enter one).\n\n**Example 1** (Two real solutions):\n```\n3, 4\n```\n**Example 2** (Two complex solutions):\n```\n3/sqrt(2) - 4i, 3/sqrt(2) + 4i\n```\n**Example 3** (One solution):\n```\n6\n```',
+          },
+          { name: 'linear-equation' },
+        ],
       },
     },
   });

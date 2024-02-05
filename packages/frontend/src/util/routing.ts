@@ -16,7 +16,7 @@ export function authProtectedLoader (_args: LoaderFunctionArgs): Response | null
   return null
 }
 
-export function logoutLoader (): Response | null {
+export function logoutLoader (): Response {
   removeAccessToken()
   return redirect('/login')
 }

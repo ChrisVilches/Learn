@@ -56,6 +56,39 @@ export class ProblemService {
     return { ...generatedProblem, ...problemSolutionOptions };
   }
 
+  async getUserSolvedStats(userId: number, daysAgo: number) {
+    const fromDate = new Date();
+    fromDate.setDate(fromDate.getDate() - daysAgo);
+
+    // TODO: Improve this query.
+    const all = await this.prisma.generatedProblem.findMany({
+      select: {
+        createdAt: true,
+        verdict: true,
+      },
+      where: {
+        userAssignedId: userId,
+        createdAt: {
+          gte: fromDate,
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    const groups: Record<string, number> = {};
+    for (const { verdict, createdAt } of all) {
+      const date = createdAt.toISOString().split('T')[0];
+      groups[date] ??= 0;
+      if (verdict === true) {
+        groups[date]++;
+      }
+    }
+
+    return groups;
+  }
+
   async findProblemByIdAndUser(
     problemId: number,
     userId: number,

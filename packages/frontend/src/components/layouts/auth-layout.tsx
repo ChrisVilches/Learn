@@ -18,7 +18,7 @@ export function AuthLayout (): JSX.Element {
   // TODO: add tooltip to logout button
   return (
     <div className="m-10 lg:max-w-5xl lg:mx-auto">
-      <div className="flex mb-10">
+      <nav className="flex mb-10">
         <div className="flex grow">
           <Link className="bg-black text-violet-800 hover:text-violet-200 duration-100 hover:bg-violet-950 p-4 rounded-md transition-colors" to='/'><RiHome2Line /></Link>
         </div>
@@ -33,8 +33,10 @@ export function AuthLayout (): JSX.Element {
             <Link className="bg-black text-violet-800 hover:text-violet-200 duration-100 hover:bg-violet-950 p-4 rounded-md transition-colors" to='/logout'><RiLogoutBoxRLine /></Link>
           </div>
         </div>
-      </div>
-      <Outlet/>
+      </nav>
+      <main>
+        <Outlet/>
+      </main>
     </div>
   )
 }

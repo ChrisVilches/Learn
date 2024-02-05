@@ -5,6 +5,8 @@ import { useQuery } from 'react-query'
 import { getProblemHelp } from '../api-client/problem'
 import { useOnce } from '../hooks/use-once'
 import { TbBulb } from 'react-icons/tb'
+import Markdown from 'react-markdown'
+import { TextSkeleton } from './loaders/text-skeleton'
 
 interface ProblemHelpProps {
   problemId: number
@@ -33,7 +35,7 @@ export function ProblemHelp ({ problemId }: ProblemHelpProps): JSX.Element {
   // TODO: Maybe I could use markdown in order to format the help (since the text has to be
   //       stored in the database, and I don't want to store it as HTML)
   const noDataAvailable = isError || isUndefined(data) || data?.length === 0
-  const result = noDataAvailable ? <i>No help available</i> : data
+  const result = noDataAvailable ? '*No help available*' : data
 
   return (
     <>
@@ -41,9 +43,7 @@ export function ProblemHelp ({ problemId }: ProblemHelpProps): JSX.Element {
         <TbBulb/>
       </button>
       <Modal openModal={showModal} closeModal={() => { setShowModal(false) }}>
-        <p>
-          {isFetching ? 'Loading...' : result}
-        </p>
+        {isFetching ? <TextSkeleton/> : <Markdown className="help-markdown">{result}</Markdown>}
       </Modal>
 
     </>

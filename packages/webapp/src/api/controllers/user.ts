@@ -9,13 +9,16 @@ import { ErrorMappingInterceptor } from '../interceptors/error-mapping';
 import { User } from '@prisma/client';
 import { JwtAuthGuard } from '../../auth/guards/jwt';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { random, range } from 'lodash';
+import { random } from 'lodash';
+import { ProblemService } from '../../logic/services/problem';
 
 @Controller()
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(new ErrorMappingInterceptor())
 export class UserController {
+  constructor(private readonly problemService: ProblemService) {}
+
   @Get('/me')
   @ApiOperation({ summary: 'User profile and related data' })
   async me(@Req() { user }): Promise<User> {
@@ -24,14 +27,12 @@ export class UserController {
 
   @Get('/recent_activity')
   @ApiOperation({ summary: 'Get user recent activity' })
-  async recentActivity() {
-    const someMonthsAgo = new Date();
-    someMonthsAgo.setMonth(someMonthsAgo.getMonth() - 6);
+  async recentActivity(@Req() { user }) {
+    const stats = await this.problemService.getUserSolvedStats(user.id, 30 * 6);
 
-    // TODO: Data is hardcoded
-    // TODO: Implement the one for the calendar heatmap.
     // TODO: The `skillScore` data is unused in the frontend, for now.
     return {
+      // TODO: Data is hardcoded
       skillScore: [
         { category: 'Linear Algebra', score: random(2, 8) },
         { category: 'Algorithms', score: random(2, 8) },
@@ -40,10 +41,7 @@ export class UserController {
         { category: 'Probability', score: random(2, 8) },
         { category: 'Algebra', score: random(2, 8) },
       ],
-      calendar: {
-        fromDay: someMonthsAgo,
-        problemsSolved: range(30 * 6).map(() => random(0, 20)),
-      },
+      calendar: Object.entries(stats).map(([k, count]) => ({ date: k, count })),
     };
   }
 }

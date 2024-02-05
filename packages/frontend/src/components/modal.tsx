@@ -6,6 +6,8 @@ interface ModalProps {
   children?: ReactNode
 }
 
+// TODO: Detect click outside dialog (and close it).
+
 export function Modal ({ openModal, closeModal, children }: ModalProps): JSX.Element {
   const ref = useRef<HTMLDialogElement | null>(null)
 
@@ -24,16 +26,14 @@ export function Modal ({ openModal, closeModal, children }: ModalProps): JSX.Ele
       className={`${opacity} fixed inset-0 bg-neutral-200 bg-opacity-10 backdrop-blur-sm transition-all`}
     >
       <dialog
-        className='p-8 rounded-lg shadow transition'
+        className='p-8 rounded-lg shadow transition w-full md:w-[400px] lg:w-[600px]'
         ref={ref}
         onCancel={closeModal}
       >
         <div className='mb-8'>
           {children}
         </div>
-        <button onClick={closeModal}>
-          Close
-        </button>
+        <button className="p-4 duration-200 transition-colors rounded-md bg-slate-900 hover:bg-purple-900" onClick={closeModal}>Close</button>
       </dialog>
     </div>
   )
