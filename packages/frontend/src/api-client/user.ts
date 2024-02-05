@@ -17,11 +17,14 @@ export async function getUserProfile (): Promise<UserProfile> {
   return userProfileSchema.parse(result.data)
 }
 
-export async function getRecentActivity (): Promise<{ skillScore: SkillScore, calendar: CalendarHeatmapData }> {
+export async function getRecentActivity (): Promise<{ calendar: CalendarHeatmapData }> {
   const result = await httpClientAuth.get('/recent_activity')
 
-  return z.object({
-    skillScore: skillScoreSchema,
-    calendar: calendarHeatmapDataSchema
+  const { daysStats } = z.object({
+    daysStats: calendarHeatmapDataSchema
   }).parse(result.data)
+
+  return {
+    calendar: daysStats
+  }
 }

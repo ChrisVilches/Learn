@@ -7,7 +7,6 @@ import { Spinner } from '../loaders/spinner'
 
 function AuthLayoutSuspense (): JSX.Element {
   return (
-    // TODO: Maybe show skeleton of navbar?
     <div className="flex justify-center">
       <Spinner/>
     </div>
@@ -16,10 +15,6 @@ function AuthLayoutSuspense (): JSX.Element {
 
 export function AuthLayout (): JSX.Element {
   const data = useLoaderData() as { user: Promise<{ username: string }> }
-
-  // TODO: Does this render props make things slow??
-  //       It's the solution explained here:
-  //       https://reactrouter.com/en/main/guides/deferred
 
   return (
     <React.Suspense fallback={<AuthLayoutSuspense/>}>

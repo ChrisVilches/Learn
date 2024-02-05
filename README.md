@@ -28,15 +28,15 @@ Setup database:
 DATABASE_URL=postgresql://postgres:mypass@172.25.0.2:5432/learn_dev?schema=public
 SECRET_KEY=abcdefghijkl
 
-docker build --target db -t webapp-setup .
-docker run --rm --env DATABASE_URL=$DATABASE_URL --network=custom_network1 webapp-setup
+docker build --target db -t learn-db-setup .
+docker run --rm --env DATABASE_URL=$DATABASE_URL --network=custom_network1 learn-db-setup
 ```
 
 Run app:
 
 ```sh
-docker build --target app -t webapp-run .
-docker run -dit -p 3007:3000 --env ALLOW_HOST=https://learn.chrisvilches.com --env DATABASE_URL=$DATABASE_URL --env SECRET_KEY=$SECRET_KEY --network=custom_network1 --name webapp webapp-run
+docker build --target app -t learn-app .
+docker run -dit -p 3007:3000 --env ALLOW_HOST=https://learn.chrisvilches.com --env DATABASE_URL=$DATABASE_URL --env SECRET_KEY=$SECRET_KEY --network=custom_network1 --name learn learn-app
 ```
 
 ## Testing
