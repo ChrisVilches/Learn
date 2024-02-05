@@ -14,6 +14,7 @@ describe('checkSolution', () => {
   test('one solution', () => {
     expect(checkSolutionFromParameters(2, 1, 4, 5, '-2')).toBe('ok')
     expect(checkSolutionFromParameters(-1, 0, 0, -3, '3')).toBe('ok')
+    expect(checkSolutionFromParameters(-1, 0, 3, 0, '0')).toBe('ok')
     expect(checkSolutionFromParameters(3, Math.sqrt(56), 99, 111111, '(1/96) (2*sqrt(14) - 111111)')).toBe('ok')
   })
 

@@ -9,11 +9,11 @@ import { formatSumTerms } from '../util/algebra'
 const solutionSchema = z.literal('multiple').or(z.literal('none')).or(z.string().transform(parseMathOrThrow))
 
 const isSolution = (leftSide: MathNode, rightSide: MathNode, x: number): boolean => {
-  return equalClose(dist(leftSide, rightSide, x), 0)
+  return equalClose(diff(leftSide, rightSide, x), 0)
 }
 
-const dist = (leftSide: MathNode, rightSide: MathNode, x: number): number => {
-  return Math.abs(leftSide.evaluate({ x }) - rightSide.evaluate({ x }))
+const diff = (leftSide: MathNode, rightSide: MathNode, x: number): number => {
+  return leftSide.evaluate({ x }) - rightSide.evaluate({ x })
 }
 
 const hasInfiniteSolutions = (leftSide: MathNode, rightSide: MathNode): boolean => {
@@ -21,9 +21,9 @@ const hasInfiniteSolutions = (leftSide: MathNode, rightSide: MathNode): boolean 
 }
 
 const hasNoSolution = (leftSide: MathNode, rightSide: MathNode): boolean => {
-  const dist1 = dist(leftSide, rightSide, -1)
-  const dist2 = dist(leftSide, rightSide, 1)
-  return equalClose(dist1, dist2)
+  const diff1 = diff(leftSide, rightSide, -1)
+  const diff2 = diff(leftSide, rightSide, 1)
+  return equalClose(diff1, diff2)
 }
 
 const problemSchema = z.object({
