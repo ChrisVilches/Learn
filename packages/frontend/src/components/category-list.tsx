@@ -32,14 +32,10 @@ const CategoryListSkeleton = (): JSX.Element => (
 )
 
 export const CategoryList = (): JSX.Element => {
-  const { isLoading, isError, data } = useQuery(fetchCategories.name, fetchCategories)
+  const { isLoading, data } = useQuery(fetchCategories.name, fetchCategories)
 
   if (isLoading) {
     return <CategoryListSkeleton/>
-  }
-
-  if (isError) {
-    throw new Error('TODO: Handle later')
   }
 
   return (

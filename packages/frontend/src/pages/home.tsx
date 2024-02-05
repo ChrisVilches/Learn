@@ -32,8 +32,6 @@ export const HomePage = (): JSX.Element => {
     async () => await getRecentActivity()
   )
 
-  // TODO: Maybe load the profile in the Route loader? Just for education.
-
   const { isLoading: isUserProfileLoading, data: userProfile } = useQuery(
     [getUserProfile.name],
     async () => await getUserProfile()

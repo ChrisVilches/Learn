@@ -33,8 +33,6 @@ export function ProblemHelp ({ problemId }: ProblemHelpProps): JSX.Element {
     setShowModal(true)
   }, [fetchOnlyOnce])
 
-  // TODO: Maybe I could use markdown in order to format the help (since the text has to be
-  //       stored in the database, and I don't want to store it as HTML)
   const noDataAvailable = isError || isUndefined(data) || data?.length === 0
   const result = noDataAvailable ? '*No help available*' : data
 

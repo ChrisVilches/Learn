@@ -1,10 +1,8 @@
 import { useDismiss, useFloating, useFocus, useHover, useInteractions, useRole, autoUpdate, offset, flip, shift } from '@floating-ui/react'
 import { type ReactNode, useState, type ReactElement } from 'react'
 
-// TODO: Currently using render-props. Can't I just pass the child as React node element?
-
 interface TooltipProps {
-  children: (props: any) => ReactElement
+  children: (props: unknown) => ReactElement
   label: ReactNode
 }
 

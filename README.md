@@ -10,6 +10,14 @@ Made with TypeScript, NestJS and React.
 
 ## Deployment
 
+### Frontend App (React)
+
+Example of how to set environment variables:
+
+```sh
+VITE_BASE_URL=http://localhost:3000 npm run dev
+```
+
 ### Web App (NestJS)
 
 Example of how to deploy using Docker.

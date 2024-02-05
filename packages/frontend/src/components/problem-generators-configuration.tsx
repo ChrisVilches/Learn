@@ -43,7 +43,7 @@ interface ProblemGeneratorsConfigurationProps {
 }
 
 export const ProblemGeneratorsConfiguration = ({ slug }: ProblemGeneratorsConfigurationProps): JSX.Element => {
-  const { isLoading, isError, data } = useQuery(
+  const { isLoading, data } = useQuery(
     [fetchCategoryGenerators.name, slug],
     async () => await fetchCategoryGenerators(slug)
   )
@@ -58,7 +58,6 @@ export const ProblemGeneratorsConfiguration = ({ slug }: ProblemGeneratorsConfig
   }, [toggleGeneratorAsync, isGeneratorEnabled])
 
   if (isLoading) {
-    // TODO: Improve loader.
     return (
       <>
         {['w-[70px]', 'w-[60px]', 'w-[95px]'].map((width, idx) => (
@@ -68,10 +67,6 @@ export const ProblemGeneratorsConfiguration = ({ slug }: ProblemGeneratorsConfig
         ))}
       </>
     )
-  }
-
-  if (isError) {
-    throw new Error('TODO: Handle later')
   }
 
   return (

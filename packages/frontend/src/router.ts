@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import { GlobalError } from './components/errors/global-error'
 import { CategoryPage } from './pages/category'
 import { LoginPage } from './pages/login'
-import { loginLoader, authProtectedLoader, logoutLoader } from './util/routing'
+import { loginLoader, authProtectedLoader, logoutLoader, authLayoutLoader } from './util/routing'
 import { NotFoundPage } from './pages/not-found'
 import { Layout } from './components/layouts/layout'
 import { HomePage } from './pages/home'
@@ -24,6 +24,7 @@ const routes = [
 
 export const router = createBrowserRouter([
   {
+    loader: authLayoutLoader,
     Component: Layout,
     children: [
       {

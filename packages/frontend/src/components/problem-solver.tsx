@@ -118,7 +118,7 @@ const ProblemSolverInner = ({ problem, fetchNextProblem, onProblemAccepted }: Pr
 }
 
 export const ProblemSolver = ({ slug, difficulty, onProblemAccepted }: ProblemSolverProps): JSX.Element => {
-  const { isFetching, isError, refetch, data } = useQuery(
+  const { isFetching, refetch, data } = useQuery(
     [generateNewProblem.name, slug],
     async () => await generateNewProblem(slug ?? '', difficulty)
   )
@@ -131,8 +131,8 @@ export const ProblemSolver = ({ slug, difficulty, onProblemAccepted }: ProblemSo
     return <ProblemSkeleton/>
   }
 
-  if (isError || isUndefined(data)) {
-    throw new Error('TODO: Handle later')
+  if (isUndefined(data)) {
+    throw new Error()
   }
 
   return (

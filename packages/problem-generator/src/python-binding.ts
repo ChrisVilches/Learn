@@ -1,6 +1,5 @@
 import util from 'util'
 import * as child from 'child_process'
-import { z } from 'zod'
 const exec = util.promisify(child.exec)
 
 // TODO: Temporary solution.
