@@ -80,7 +80,7 @@ export const CategoryPage = (): JSX.Element => {
   return (
     <>
       <div className="grid grid-cols-10 gap-4">
-        <div className="col-span-6 bg-gray-900 p-4 rounded-lg">
+        <div className="col-span-10 md:col-span-6 bg-gray-900 p-4 rounded-lg">
           <CategoryInformation
             name={category.name}
             description={category.description}
@@ -88,7 +88,7 @@ export const CategoryPage = (): JSX.Element => {
             className='mb-10'/>
         </div>
 
-        <div className="col-span-4 bg-gray-900 p-4 rounded-lg">
+        <div className="col-span-10 md:col-span-4 bg-gray-900 p-4 rounded-lg">
           <DifficultyText className="mb-6 float-end" difficulty={difficulty}/>
           <Slider
             className="mb-8"
