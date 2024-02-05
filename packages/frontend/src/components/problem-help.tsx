@@ -7,6 +7,7 @@ import { useOnce } from '../hooks/use-once'
 import { TbBulb } from 'react-icons/tb'
 import Markdown from 'react-markdown'
 import { TextSkeleton } from './loaders/text-skeleton'
+import { Tooltip } from './tooltip'
 
 interface ProblemHelpProps {
   problemId: number
@@ -39,13 +40,16 @@ export function ProblemHelp ({ problemId }: ProblemHelpProps): JSX.Element {
 
   return (
     <>
-      <button className="bg-black text-violet-800 hover:text-violet-200 duration-100 hover:bg-violet-950 p-2 rounded-full transition-colors" onClick={onClickOpenModal}>
-        <TbBulb/>
-      </button>
+      <Tooltip label="See help">
+        {(props) => (
+          <button {...props} className="bg-black text-violet-800 hover:text-violet-200 duration-100 hover:bg-violet-950 p-2 rounded-full transition-colors" onClick={onClickOpenModal}>
+            <TbBulb/>
+          </button>
+        )}
+      </Tooltip>
       <Modal openModal={showModal} closeModal={() => { setShowModal(false) }}>
         {isFetching ? <TextSkeleton/> : <Markdown className="help-markdown">{result}</Markdown>}
       </Modal>
-
     </>
   )
 }

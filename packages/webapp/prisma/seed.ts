@@ -4,8 +4,6 @@ import { AuthModule } from '../src/auth/auth-module';
 import { AuthService } from '../src/auth/services/auth';
 import { INestApplication } from '@nestjs/common';
 
-// TODO: Seed the help as well.
-
 const prisma = new PrismaClient();
 let app: INestApplication;
 
@@ -72,7 +70,7 @@ async function main(): Promise<void> {
         create: [
           {
             name: 'quadratic-equation',
-            help: 'Enter two solutions separated by a comma (if they are the same, just enter one).\n\n**Example 1** (Two real solutions):\n```\n3, 4\n```\n**Example 2** (Two complex solutions):\n```\n3/sqrt(2) - 4i, 3/sqrt(2) + 4i\n```\n**Example 3** (One solution):\n```\n6\n```',
+            help: 'Enter two solutions separated by a comma (if they are the same, just enter one).\n\n**Example 1** (Two real solutions):\n```\n3, 4\n```\n**Example 2** (Two complex solutions):\n```\n5 - i * sqrt(3/5), 5 + i * sqrt(3/5)\n```\n**Example 3** (One solution):\n```\n6\n```',
           },
           { name: 'linear-equation' },
         ],

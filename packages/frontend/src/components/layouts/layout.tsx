@@ -10,9 +10,11 @@ export function Layout (): JSX.Element {
     return <AuthLayout/>
   } else {
     return (
-      <main>
-        <Outlet/>
-      </main>
+      <div className="m-10 lg:max-w-5xl lg:mx-auto">
+        <main>
+          <Outlet/>
+        </main>
+      </div>
     )
   }
 }

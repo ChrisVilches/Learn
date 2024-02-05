@@ -34,6 +34,7 @@ describe('checkSolution', () => {
 
   test('complex correct', () => {
     expect(checkSolutionFromVertex(1, 2, 1, '2-i, 2+i')).toBe('ok')
+    expect(checkSolutionFromVertex(2, 5, 3, '5 - sqrt(3/2) * i, 5 + sqrt(3/2) * i')).toBe('ok')
   })
 
   test('bad syntax', () => {

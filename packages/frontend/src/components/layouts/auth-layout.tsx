@@ -3,6 +3,7 @@ import { getUserProfile } from '../../api-client/user'
 import { useQuery } from 'react-query'
 import { LuUser2 } from 'react-icons/lu'
 import { RiLogoutBoxRLine, RiHome2Line } from 'react-icons/ri'
+import { Tooltip } from '../tooltip'
 
 export function AuthLayout (): JSX.Element {
   const { isLoading, isError, error, data } = useQuery(
@@ -30,7 +31,17 @@ export function AuthLayout (): JSX.Element {
             <LuUser2 />
           </div>
           <div className="flex">
-            <Link className="bg-black text-violet-800 hover:text-violet-200 duration-100 hover:bg-violet-950 p-4 rounded-md transition-colors" to='/logout'><RiLogoutBoxRLine /></Link>
+            <Tooltip label="Log out">
+              {(props) => (
+                <Link
+                  {...props}
+                  className="bg-black text-violet-800 hover:text-violet-200 duration-100 hover:bg-violet-950 p-4 rounded-md transition-colors"
+                  to='/logout'
+                >
+                  <RiLogoutBoxRLine />
+                </Link>
+              )}
+            </Tooltip>
           </div>
         </div>
       </nav>

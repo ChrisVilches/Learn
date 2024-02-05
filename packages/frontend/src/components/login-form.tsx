@@ -64,32 +64,33 @@ export function Login (): JSX.Element {
   const isSubmitDisabled = isSubmitting || !isValid
 
   return (
-    <div>
+    <>
       <Toaster/>
 
       <div className='bg-slate-700 p-5 rounded-md mb-10'>
         <p className='text-lg font-bold mb-4'>Hint</p>
         Login with the default form values.
       </div>
-      {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-      <form onSubmit={handleSubmit(submit)}>
-        <div className='mb-4'>
-          <input {...register('username')} name='username' className='block p-2 rounded-md'/>
-          <p className='text-red-500 text-sm'>{errors.username?.message}</p>
-        </div>
+      <div className="flex items-center justify-center">
+        {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+        <form onSubmit={handleSubmit(submit)}>
+          <div className='mb-4'>
+            <input {...register('username')} name='username' className='block p-2 rounded-md'/>
+            <p className='text-red-500 text-sm'>{errors.username?.message}</p>
+          </div>
 
-        <div className='mb-4'>
-          <input {...register('password')} type='password' name='password' className='block p-2 rounded-md'/>
-          <p className='text-red-500 text-sm'>{errors.password?.message}</p>
-        </div>
+          <div className='mb-4'>
+            <input {...register('password')} type='password' name='password' className='block p-2 rounded-md'/>
+            <p className='text-red-500 text-sm'>{errors.password?.message}</p>
+          </div>
 
-        <p className='bg-red-500 rounded-md p-5 empty:hidden'>{errors.root?.message}</p>
+          <p className='bg-red-500 rounded-md p-5 empty:hidden'>{errors.root?.message}</p>
 
-        <button type="submit" disabled={isSubmitDisabled} className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800 disabled:bg-gray-600 disabled:text-gray-200">
-          {isSubmitting ? 'Wait...' : 'Login'}
-        </button>
-      </form>
-
-    </div>
+          <button type="submit" disabled={isSubmitDisabled} className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800 disabled:bg-gray-600 disabled:text-gray-200">
+            {isSubmitting ? 'Wait...' : 'Login'}
+          </button>
+        </form>
+      </div>
+    </>
   )
 }
