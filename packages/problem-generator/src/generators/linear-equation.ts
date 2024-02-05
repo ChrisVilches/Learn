@@ -1,7 +1,7 @@
 import { type MathNode, parse } from 'mathjs'
 import { type ProblemGenerator, type Problem } from '../types/problem'
 import { z } from 'zod'
-import { equalClose } from '../util/misc'
+import { equalClose, implicitMultiplication } from '../util/misc'
 import { parseMathOrThrow } from '../util/parse'
 import _ from 'lodash'
 import { formatSumTerms } from '../util/algebra'
@@ -89,7 +89,7 @@ export function linearEquationProblemFromParameters (m0: number, b0: number, m1:
   const rightSide = parse(formatSumTerms(rightTerms))
 
   return {
-    tex: `${leftSide.toTex()} = ${rightSide.toTex()}`,
+    tex: `${implicitMultiplication(leftSide).toTex()} = ${implicitMultiplication(rightSide).toTex()}`,
     debugInformation: `${leftSide.toString()} = ${rightSide.toString()}`,
     content: {
       leftSide: leftSide.toString(),
