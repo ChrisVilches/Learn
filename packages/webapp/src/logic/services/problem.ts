@@ -11,6 +11,8 @@ import { CategoryService } from './category';
 import { problemGenerators } from 'problem-generator';
 import { SolutionVerdict } from 'problem-generator';
 import { ProblemSolutionOptions } from 'problem-generator';
+import { addDays, formatDateYyyyMmDd } from 'src/util/date';
+import { countBy } from 'lodash';
 
 @Injectable()
 export class ProblemService {
@@ -57,41 +59,16 @@ export class ProblemService {
   }
 
   async getUserSolvedStats(userId: number, daysAgo: number) {
-    const fromDate = new Date();
-    fromDate.setDate(fromDate.getDate() - daysAgo);
-
-    // TODO: Either improve this query, or turn this process into a job that
-    //       does some data pre-processing and stores it in a fast to read way.
-    //       Alternatives:
-    //       (1) Periodically check users that can be updated.
-    //       (2) Create a stream of solved problems, and have one or multiple workers reading
-    //           from the stream, processing and storing the data.
-    const all = await this.prisma.generatedProblem.findMany({
-      select: {
-        createdAt: true,
-        verdict: true,
-      },
-      where: {
-        userAssignedId: userId,
-        createdAt: {
-          gte: fromDate,
-        },
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
+    const recentSolvedProblems = await this.prisma.generatedProblem.findMany({
+      select: { createdAt: true, verdict: true },
+      where: { userAssignedId: userId, createdAt: { gte: addDays(-daysAgo) } },
     });
 
-    const groups: Record<string, number> = {};
-    for (const { verdict, createdAt } of all) {
-      const date = createdAt.toISOString().split('T')[0];
-      groups[date] ??= 0;
-      if (verdict === true) {
-        groups[date]++;
-      }
-    }
-
-    return groups;
+    return countBy(
+      recentSolvedProblems
+        .filter(({ verdict }) => verdict)
+        .map(({ createdAt }) => formatDateYyyyMmDd(createdAt)),
+    );
   }
 
   async findProblemByIdAndUser(

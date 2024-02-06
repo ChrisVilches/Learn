@@ -8,6 +8,8 @@ import { isUndefined } from 'lodash'
 import { ProblemHelp } from './problem-help'
 import { ProblemSkeleton } from './loaders/problem-skeleton'
 import { Spinner } from './loaders/spinner'
+import { ButtonPrimary, ButtonSecondary } from './buttons'
+import { AcceptedVerdict, SolutionError, WrongAnswerVerdict } from './verdicts'
 
 interface ProblemSolverProps {
   slug: string
@@ -58,9 +60,8 @@ const ProblemSolverInner = ({ problem, fetchNextProblem, onProblemAccepted }: Pr
     fetchNextProblem()
   }, [fetchNextProblem, resetForm])
 
-  // TODO: must disable buttons when submitting solution.
-  const submitButtonDisabled = verdict !== null || solution.trim().length === 0
-  const choiceButtonsDisabled = verdict !== null
+  const submitButtonDisabled = verdict !== null || solution.trim().length === 0 || isSubmittingSolution
+  const choiceButtonsDisabled = verdict !== null || isSubmittingSolution
 
   return (
     <div>
@@ -70,9 +71,9 @@ const ProblemSolverInner = ({ problem, fetchNextProblem, onProblemAccepted }: Pr
         </MathJax>
 
         <div className="my-4 empty:hidden">
-          {verdict === 'ok' && <p className="font-semibold text-green-700">Accepted</p>}
-          {verdict === 'incorrect' && <p className="font-semibold text-red-700">Wrong Answer</p>}
-          {isJudgeProblemError && <div className="font-semibold text-orange-700">{apiErrorSchema.parse(judgeProblemError).message}</div>}
+          {verdict === 'ok' && <AcceptedVerdict/>}
+          {verdict === 'incorrect' && <WrongAnswerVerdict/>}
+          {isJudgeProblemError && <SolutionError>{apiErrorSchema.parse(judgeProblemError).message}</SolutionError>}
         </div>
       </div>
 
@@ -82,29 +83,20 @@ const ProblemSolverInner = ({ problem, fetchNextProblem, onProblemAccepted }: Pr
         <div className="flex space-x-4">
           {problem.freeInput
             ? (
-              <button
-                onClick={() => { submitSolution(solution) }}
-                disabled={submitButtonDisabled}
-                className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800 disabled:bg-gray-600 disabled:text-gray-200"
-              >
+              <ButtonPrimary onClick={() => { submitSolution(solution) }} disabled={submitButtonDisabled}>
                 Submit
-              </button>
+              </ButtonPrimary>
               )
             : ''}
 
           {problem.choiceAnswers.map(({ label, result }, idx) => (
-            <button
-              key={idx}
-              className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800 disabled:bg-gray-600 disabled:text-gray-200"
-              onClick={() => { submitSolution(result) }}
-              disabled={choiceButtonsDisabled}
-            >
+            <ButtonPrimary key={idx} onClick={() => { submitSolution(result) }} disabled={choiceButtonsDisabled}>
               {label}
-            </button>
+            </ButtonPrimary>
           ))}
 
-          {verdict === null && <button className="p-4 duration-200 transition-colors rounded-md bg-slate-900 hover:bg-purple-900" onClick={getNextProblem}>Skip</button>}
-          {verdict !== null && <button className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800" onClick={getNextProblem}>Next problem</button>}
+          {verdict === null && <ButtonSecondary onClick={getNextProblem}>Skip</ButtonSecondary>}
+          {verdict !== null && <ButtonPrimary onClick={getNextProblem}>Next problem</ButtonPrimary>}
         </div>
 
         {isSubmittingSolution ? <Spinner/> : ''}

@@ -49,7 +49,13 @@ Make sure to pass the `PYTHON_CMD` (Python interpreter path) environment variabl
 PYTHON_CMD=/usr/bin/python3 npm run test --prefix ./packages/problem-generator
 ```
 
-### `webapp` integration tests
+### `webapp` unit tests and integration tests
+
+For unit tests, run (on `./packages/webapp`):
+
+```sh
+npm run test
+```
 
 Make sure Docker (at least version 24.0.7) is installed.
 

@@ -1,5 +1,6 @@
 import { type ReactNode, useRef, useEffect, useCallback } from 'react'
 import { insideRectangle } from '../util/misc'
+import { ButtonSecondary } from './buttons'
 
 interface ModalProps {
   openModal: boolean
@@ -40,7 +41,9 @@ export function Modal ({ openModal, closeModal, children }: ModalProps): JSX.Ele
         <div className='mb-8'>
           {children}
         </div>
-        <button className="p-4 duration-200 transition-colors rounded-md bg-slate-900 hover:bg-purple-900" onClick={closeModal}>Close</button>
+        <ButtonSecondary onClick={closeModal}>
+          Close
+        </ButtonSecondary>
       </dialog>
     </div>
   )

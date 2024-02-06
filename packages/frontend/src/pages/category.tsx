@@ -3,16 +3,17 @@ import { ProblemGeneratorsConfiguration } from '../components/problem-generators
 import { CategoryInformation } from '../components/category-information'
 import { useCallback, useState } from 'react'
 import { isArray, isUndefined } from 'lodash'
-import { Slider } from '@mui/base/Slider'
 import { fetchCategory, saveDifficultyPreference } from '../api-client/category'
 import { useQuery } from 'react-query'
 import { delayExecutionOnlyLast } from '../util/delay'
 import ConfettiExplosion from 'react-confetti-explosion'
 import { ProblemSolver } from '../components/problem-solver'
 import { CategoryNotFoundError } from '../errors'
-import toast, { Toaster } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import { DifficultyText } from '../components/difficulty-text'
 import { TextSkeleton } from '../components/loaders/text-skeleton'
+import { HorizontalSlider } from '../components/slider'
+import { toastSuccess } from '../util/toast'
 
 interface DifficultyUpdate {
   slug: string
@@ -27,13 +28,6 @@ buffered$.subscribe()
 
 const getValue = (value: number | number[]): number => isArray(value) ? value[0] : value
 
-const slotProps = {
-  root: { className: 'w-full relative inline-block h-2 cursor-pointer' },
-  rail: { className: 'bg-slate-100 dark:bg-slate-700 h-2 w-full rounded-full block absolute' },
-  track: { className: 'bg-slate-500 dark:bg-slate-400 h-2 absolute rounded-full' },
-  thumb: { className: 'ring-slate-500 dark:ring-slate-400 ring-2 w-4 h-4 -mt-1 -ml-2 flex items-center justify-center bg-white rounded-full shadow absolute' }
-}
-
 const CategoryPageSkeleton = (): JSX.Element => (
   <div className="flex justify-center">
     <div className="grid grid-cols-10 gap-4 w-full">
@@ -42,7 +36,7 @@ const CategoryPageSkeleton = (): JSX.Element => (
       </div>
 
       <div className="col-span-10 md:col-span-4 bg-gray-900 p-4 rounded-lg w-full animate-pulse">
-      <TextSkeleton variant="medium" lines={4}/>
+        <TextSkeleton variant="medium" lines={4}/>
       </div>
     </div>
   </div>
@@ -75,7 +69,7 @@ export const CategoryPage = (): JSX.Element => {
   const [isExploding, setIsExploding] = useState(false)
 
   const onProblemAccepted = useCallback(() => {
-    toast.success('Correct answer!')
+    toastSuccess('Correct answer!')
     setIsExploding(true)
   }, [])
 
@@ -100,14 +94,12 @@ export const CategoryPage = (): JSX.Element => {
 
         <div className="col-span-10 md:col-span-4 bg-gray-900 p-4 rounded-lg">
           <DifficultyText className="mb-6 float-end" difficulty={difficulty}/>
-          <Slider
-            className="mb-8"
+          <HorizontalSlider
+            value={difficulty}
             min={1}
             max={100}
             onChange={onChangeDifficulty}
             onChangeCommitted={onChangeCommittedDifficulty}
-            value={difficulty}
-            slotProps={slotProps}
           />
 
           <ProblemGeneratorsConfiguration slug={slug ?? ''}/>

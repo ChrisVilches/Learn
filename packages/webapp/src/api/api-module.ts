@@ -6,6 +6,7 @@ import { UserController } from './controllers/user';
 import { AuthModule } from '../auth/auth-module';
 import { ConfigModule } from '@nestjs/config';
 import { z } from 'zod';
+import { CacheModule } from '@nestjs/cache-manager';
 
 const envSchema = z.object({
   NODE_ENV: z
@@ -26,6 +27,7 @@ const envSchema = z.object({
     }),
     AuthModule,
     LogicModule,
+    CacheModule.register(),
   ],
   controllers: [UserController, ProblemController, CategoryController],
   providers: [],

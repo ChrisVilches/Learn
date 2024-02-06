@@ -2,17 +2,24 @@ import { useQuery } from 'react-query'
 import { fetchCategories } from '../api-client/category'
 import { Link } from 'react-router-dom'
 import { TbMathIntegralX, TbMathPi, TbVector } from 'react-icons/tb'
-import { SiKnowledgebase } from 'react-icons/si'
 import { Spinner } from './loaders/spinner'
 import { TextSkeleton } from './loaders/text-skeleton'
+import { ComponentType } from 'react'
+import { isUndefined } from 'lodash'
 
-// TODO: Just a temporary heuristic. Category icons aren't implemented for now.
-function guessIcon (slug: string): JSX.Element {
-  if (slug === 'calculus') return <TbMathIntegralX/>
-  if (slug === 'algebra') return <TbMathPi/>
-  if (slug === 'linalg') return <TbVector/>
+const iconMapping: Record<string, ComponentType> = {
+  calculus: TbMathIntegralX,
+  algebra: TbMathPi,
+  linalg: TbVector
+}
 
-  return <SiKnowledgebase/>
+function getIconForCategory (slug: string): JSX.Element {
+  const Icon = iconMapping[slug]
+  if (isUndefined(Icon)) {
+    throw new Error('Icon not found')
+  }
+
+  return <Icon/>
 }
 
 const CategoryListSkeleton = (): JSX.Element => (
@@ -46,7 +53,7 @@ export const CategoryList = (): JSX.Element => {
           <div className="flex space-x-8">
             <div>
               <div className="bg-gray-800 rounded-lg w-12 h-12 flex items-center justify-center">
-                {guessIcon(slug)}
+                {getIconForCategory(slug)}
               </div>
             </div>
             <div className="max-h-52">

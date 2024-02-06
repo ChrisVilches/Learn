@@ -5,8 +5,10 @@ import { useMutation } from 'react-query'
 import { loginService } from '../api-client/login'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useCallback, useEffect } from 'react'
-import toast, { Toaster } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import { setAccessToken } from '../util/auth'
+import { ButtonPrimary } from './buttons'
+import { toastError } from '../util/toast'
 
 const formSchema = z.object({
   username: z.string().min(1, { message: 'Username is required' }),
@@ -35,7 +37,7 @@ export function Login (): JSX.Element {
 
   useEffect(() => {
     if (authError) {
-      toast.error('Please login')
+      toastError('Please login')
     }
   }, [authError])
 
@@ -86,9 +88,9 @@ export function Login (): JSX.Element {
 
           <p className='bg-red-500 rounded-md p-5 empty:hidden'>{errors.root?.message}</p>
 
-          <button type="submit" disabled={isSubmitDisabled} className="p-4 rounded-md transition-colors duration-200 hover:bg-green-900 bg-green-800 disabled:bg-gray-600 disabled:text-gray-200">
+          <ButtonPrimary type="submit" disabled={isSubmitDisabled}>
             {isSubmitting ? 'Wait...' : 'Login'}
-          </button>
+          </ButtonPrimary>
         </form>
       </div>
     </>
