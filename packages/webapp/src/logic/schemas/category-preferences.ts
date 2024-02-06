@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { problemDifficultySchema } from './problem-difficulty';
 import { createZodDto } from 'nestjs-zod';
 
-const categoryPreferencesConfigSchema = z
+export const categoryPreferencesConfigSchema = z
   .object({
     difficulty: problemDifficultySchema.optional(),
   })

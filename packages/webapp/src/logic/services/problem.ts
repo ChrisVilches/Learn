@@ -11,7 +11,7 @@ import { CategoryService } from './category';
 import { problemGenerators } from 'problem-generator';
 import { SolutionVerdict } from 'problem-generator';
 import { ProblemSolutionOptions } from 'problem-generator';
-import { addDays, formatDateYyyyMmDd } from 'src/util/date';
+import { addDays, formatDateYyyyMmDd } from '../../util/date';
 import { countBy } from 'lodash';
 
 @Injectable()
