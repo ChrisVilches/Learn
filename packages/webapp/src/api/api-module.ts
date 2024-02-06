@@ -7,6 +7,8 @@ import { AuthModule } from '../auth/auth-module';
 import { ConfigModule } from '@nestjs/config';
 import { z } from 'zod';
 import { CacheModule } from '@nestjs/cache-manager';
+import { APP_PIPE } from '@nestjs/core';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 const envSchema = z.object({
   NODE_ENV: z
@@ -30,6 +32,11 @@ const envSchema = z.object({
     CacheModule.register(),
   ],
   controllers: [UserController, ProblemController, CategoryController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useClass: ZodValidationPipe,
+    },
+  ],
 })
 export class ApiModule {}

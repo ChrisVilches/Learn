@@ -57,7 +57,7 @@ For unit tests, run (on `./packages/webapp`):
 npm run test
 ```
 
-Make sure Docker (at least version 24.0.7) is installed.
+For integration tests, make sure Docker (at least version 24.0.7) is installed.
 
 Compile the `problem-generator` package:
 

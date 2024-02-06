@@ -12,15 +12,8 @@ import {
 } from '@nestjs/common';
 import { ErrorMappingInterceptor } from '../interceptors/error-mapping';
 import { CategoryFromSlugPipe } from '../pipes/category-from-slug';
-import {
-  NewProblemRequestOptions,
-  newProblemRequestOptionsSchema,
-} from '../schemas/new-problem-request-options';
-import { ZodPipe } from '../pipes/zod';
-import {
-  ProblemSolution,
-  problemSolutionSchema,
-} from '../schemas/problem-solution';
+import { NewProblemRequestOptionsDto } from '../schemas/new-problem-request-options';
+import { ProblemSolutionDto } from '../schemas/problem-solution';
 import { ProblemService } from '../../logic/services/problem';
 import { Category, type GeneratedProblem } from '@prisma/client';
 import { SolutionVerdict } from 'problem-generator';
@@ -43,8 +36,7 @@ export class ProblemController {
   @ApiOperation({ summary: 'Generate a new problem' })
   async newProblem(
     @Req() { user },
-    @Query(new ZodPipe(newProblemRequestOptionsSchema))
-    { difficulty }: NewProblemRequestOptions,
+    @Query() { difficulty }: NewProblemRequestOptionsDto,
     @Param('category_slug', CategoryFromSlugPipe) category: Category,
   ): Promise<
     Pick<GeneratedProblem, 'id' | 'tex' | 'difficulty'> & ProblemSolutionOptions
@@ -68,8 +60,7 @@ export class ProblemController {
   @ApiOperation({ summary: 'Judge/verify a problem solution' })
   async judgeSolution(
     @Req() { user },
-    @Body(new ZodPipe(problemSolutionSchema))
-    { problemId, solution }: ProblemSolution,
+    @Body() { problemId, solution }: ProblemSolutionDto,
   ): Promise<{ verdict: SolutionVerdict }> {
     return {
       verdict: await this.problemService.judgeProblem(

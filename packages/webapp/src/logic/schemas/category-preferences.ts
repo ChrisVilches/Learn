@@ -1,12 +1,13 @@
 import { z } from 'zod';
 import { problemDifficultySchema } from './problem-difficulty';
+import { createZodDto } from 'nestjs-zod';
 
-export const categoryPreferencesConfigSchema = z
+const categoryPreferencesConfigSchema = z
   .object({
     difficulty: problemDifficultySchema.optional(),
   })
   .strict();
 
-export type CategoryPreferencesConfig = z.infer<
-  typeof categoryPreferencesConfigSchema
->;
+export class CategoryPreferencesConfigDto extends createZodDto(
+  categoryPreferencesConfigSchema,
+) {}

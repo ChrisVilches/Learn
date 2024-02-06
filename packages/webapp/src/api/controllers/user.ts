@@ -41,7 +41,6 @@ export class UserController {
       await this.cacheManager.get(cacheKey);
 
     if (isNil(result)) {
-      console.log('must fetch (TODO: remove line)', cacheKey, new Date());
       result = await this.problemService.getUserSolvedStats(user.id, 30 * 6);
       await this.cacheManager.set(cacheKey, result, STATS_CACHE_TIME_MS);
     }

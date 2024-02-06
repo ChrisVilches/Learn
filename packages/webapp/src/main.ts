@@ -4,16 +4,7 @@ import { DelayInterceptor } from './api/interceptors/delay';
 import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { isString, isEmpty } from 'lodash';
-
-// TODO: I'd like to revamp some of the code using Zod using this:
-//       https://github.com/risen228/nestjs-zod
-//       Things I'd like to implement:
-//       * Use the `createZodDto` function to automate (?) some things.
-//       * Automate the Swagger documentation generation.
-//       * Use the added types like `password`.
-//       * Remove my custom pipe, and use the one that comes in the library
-//         (it throws an exception different from ZodError, so it works for my case).
-//       * Use (many) other features.
+import { patchNestJsSwagger } from 'nestjs-zod';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(ApiModule);
@@ -28,6 +19,7 @@ async function bootstrap(): Promise<void> {
     app.enableCors({ origin: process.env.ALLOW_HOST });
   }
 
+  patchNestJsSwagger();
   const config = new DocumentBuilder()
     .setTitle('Learn App')
     .setDescription('Learn App API description')

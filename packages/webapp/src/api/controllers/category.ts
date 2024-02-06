@@ -15,11 +15,7 @@ import { CategoryFromSlugPipe } from '../pipes/category-from-slug';
 import { Category, CategoryPreferences } from '@prisma/client';
 import { CategoryService } from '../../logic/services/category';
 import { JwtAuthGuard } from '../../auth/guards/jwt';
-import { ZodPipe } from '../pipes/zod';
-import {
-  CategoryPreferencesConfig,
-  categoryPreferencesConfigSchema,
-} from '../../logic/schemas/category-preferences';
+import { CategoryPreferencesConfigDto } from '../../logic/schemas/category-preferences';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @Controller()
@@ -50,8 +46,7 @@ export class CategoryController {
   async setCategoryPreferences(
     @Req() { user },
     @Param('category_slug', CategoryFromSlugPipe) category: Category,
-    @Body(new ZodPipe(categoryPreferencesConfigSchema))
-    payload: CategoryPreferencesConfig,
+    @Body() payload: CategoryPreferencesConfigDto,
   ) {
     return await this.categoryService.setCategoryPreferences(
       user.id,
