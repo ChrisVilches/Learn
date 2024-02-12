@@ -36,7 +36,7 @@ export function Tooltip ({ children, label }: TooltipProps): JSX.Element {
       })}
       {isOpen && (
         <div
-          className="p-2 bg-black opacity-85 rounded-md"
+          className="p-2 bg-black opacity-85 rounded-md text-white"
           ref={refs.setFloating}
           style={floatingStyles}
           {...getFloatingProps()}

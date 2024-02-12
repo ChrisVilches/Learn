@@ -18,7 +18,7 @@ export function TextSkeleton ({ lines = 3, variant = 'medium' }: TextSkeletonPro
       <div className="animate-pulse flex space-x-4">
         <div className={`flex-1 py-1 ${spaceY}`}>
           {sizeValues.map((size, i) => (
-            <div key={i} className={`${height} bg-slate-700 rounded ${size}`}></div>
+            <div key={i} className={`${height} bg-slate-400 dark:bg-slate-700 rounded ${size}`}></div>
           ))}
         </div>
       </div>

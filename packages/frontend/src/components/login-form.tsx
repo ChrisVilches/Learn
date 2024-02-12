@@ -9,6 +9,7 @@ import { Toaster } from 'react-hot-toast'
 import { setAccessToken } from '../util/auth'
 import { ButtonPrimary } from './buttons'
 import { toastError } from '../util/toast'
+import { InfoAlert } from './alerts/info-alert'
 
 const formSchema = z.object({
   username: z.string().min(1, { message: 'Username is required' }),
@@ -69,20 +70,18 @@ export function Login (): JSX.Element {
     <>
       <Toaster/>
 
-      <div className='bg-slate-700 p-5 rounded-md mb-10'>
-        <p className='text-lg font-bold mb-4'>Hint</p>
-        Login with the default form values.
-      </div>
+      <InfoAlert title='Hint' content='Login with the default form values.'/>
+
       <div className="flex items-center justify-center">
         {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
         <form onSubmit={handleSubmit(submit)}>
           <div className='mb-4'>
-            <input {...register('username')} name='username' className='block p-2 rounded-md'/>
+            <input {...register('username')} name='username' className='text-input'/>
             <p className='text-red-500 text-sm'>{errors.username?.message}</p>
           </div>
 
           <div className='mb-4'>
-            <input {...register('password')} type='password' name='password' className='block p-2 rounded-md'/>
+            <input {...register('password')} type='password' name='password' className='text-input'/>
             <p className='text-red-500 text-sm'>{errors.password?.message}</p>
           </div>
 

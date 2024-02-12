@@ -22,7 +22,7 @@ const ProblemGeneratorItemConfig = ({ id, name, enabled, toggle, toggleDisabled 
         onClick={toggle}
         data-generator-id={id}
         disabled={toggleDisabled}
-        className={`text-sm p-2 h-10 my-1 rounded-md transition-colors duration-300 bg-black border-[1px] border-black hover:border-yellow-300 ${enabled ? '' : 'bg-gray-800 border-gray-800 text-gray-400'}`}
+        className={`text-sm p-2 h-10 my-1 rounded-md text-gray-100 transition-colors duration-300 bg-black border-[1px] border-black hover:border-yellow-300 ${enabled ? '' : 'bg-gray-800 border-gray-800 text-gray-400'}`}
       >
         {name}
       </button>

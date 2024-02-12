@@ -34,7 +34,7 @@ export function Modal ({ openModal, closeModal, children }: ModalProps): JSX.Ele
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
       <dialog
         onClick={handleClick}
-        className='p-8 rounded-lg shadow transition w-full md:w-[400px] lg:w-[600px]'
+        className='p-8 bg-slate-100 dark:bg-slate-600 text-black dark:text-white rounded-lg shadow transition w-full md:w-[400px] lg:w-[600px]'
         ref={ref}
         onCancel={closeModal}
       >

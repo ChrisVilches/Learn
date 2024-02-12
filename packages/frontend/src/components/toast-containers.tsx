@@ -19,7 +19,7 @@ function ToastWithIcon ({ id, visible, children, icon: Icon, iconClass }: ToastW
     <div
       className={`${
         visible ? 'animate-enter' : 'animate-leave'
-      } max-w-md w-full bg-slate-900 shadow-lg rounded-lg flex ring-1 ring-black ring-opacity-5`}
+      } max-w-md w-full text-slate-200 bg-slate-900 shadow-lg rounded-lg flex ring-1 ring-black ring-opacity-5`}
     >
       <div className="flex-1 p-4">
         <div className="flex items-center space-x-8">

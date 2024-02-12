@@ -1,0 +1,24 @@
+.theme-toggle {
+  @apply flex;
+  @apply items-center;
+  @apply justify-between;
+  @apply w-20 h-10 px-2;
+  @apply bg-gray-200 dark:bg-gray-700;
+  @apply rounded-full;
+
+  @apply peer-focus:ring-4;
+  @apply peer-focus:outline-none;
+  @apply peer-focus:ring-gray-300;
+  @apply dark:peer-focus:ring-gray-800;
+  @apply peer-checked:after:translate-x-full;
+  @apply peer-checked:after:left-8;
+
+  @apply after:transition-all;
+  @apply after:bg-gray-400;
+  @apply dark:after:bg-gray-200;
+  @apply after:rounded-full;
+  @apply after:content-[''];
+  @apply after:absolute;
+  @apply after:h-5;
+  @apply after:w-5;
+}

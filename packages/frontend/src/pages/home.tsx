@@ -5,6 +5,8 @@ import { getRecentActivity, getUserProfile } from '../api-client/user'
 import { useQuery } from 'react-query'
 import { isNil } from 'lodash'
 import { Spinner } from '../components/loaders/spinner'
+import { Helmet } from 'react-helmet'
+import { getFullTitle } from '../util/dom'
 
 function calendarClassForValue (value: unknown): string {
   let color = 0
@@ -39,9 +41,15 @@ export const HomePage = (): JSX.Element => {
 
   return (
     <div>
-      {isUserProfileLoading ? <Spinner/> : (
-        <div className='mb-8'>Welcome, <b>{userProfile?.username}</b>!</div>
-      )}
+      <Helmet>
+        <title>{getFullTitle()}</title>
+      </Helmet>
+
+      {isUserProfileLoading
+        ? <Spinner/>
+        : (
+          <div className='mb-8'>Welcome, <b>{userProfile?.username}</b>!</div>
+          )}
 
       <div className="md:grid md:grid-cols-2 md:gap-8 mb-8">
         <div>

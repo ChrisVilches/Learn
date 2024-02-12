@@ -14,6 +14,9 @@ import { DifficultyText } from '../components/difficulty-text'
 import { TextSkeleton } from '../components/loaders/text-skeleton'
 import { HorizontalSlider } from '../components/slider'
 import { toastSuccess } from '../util/toast'
+import { Helmet } from 'react-helmet'
+import { getFullTitle } from '../util/dom'
+import { CategoryInfoCard } from '../components/cards/category-info-card'
 
 interface DifficultyUpdate {
   slug: string
@@ -31,13 +34,13 @@ const getValue = (value: number | number[]): number => isArray(value) ? value[0]
 const CategoryPageSkeleton = (): JSX.Element => (
   <div className="flex justify-center">
     <div className="grid grid-cols-10 gap-4 w-full">
-      <div className="col-span-10 md:col-span-6 bg-gray-900 p-4 rounded-lg animate-pulse">
+      <CategoryInfoCard className="col-span-10 md:col-span-6 animate-pulse">
         <TextSkeleton variant="small" lines={8}/>
-      </div>
+      </CategoryInfoCard>
 
-      <div className="col-span-10 md:col-span-4 bg-gray-900 p-4 rounded-lg w-full animate-pulse">
+      <CategoryInfoCard className="col-span-10 md:col-span-4 w-full animate-pulse">
         <TextSkeleton variant="medium" lines={4}/>
-      </div>
+      </CategoryInfoCard>
     </div>
   </div>
 )
@@ -83,16 +86,19 @@ export const CategoryPage = (): JSX.Element => {
 
   return (
     <>
+      <Helmet>
+        <title>{getFullTitle(category.name)}</title>
+      </Helmet>
       <div className="grid grid-cols-10 gap-4">
-        <div className="col-span-10 md:col-span-6 bg-gray-900 p-4 rounded-lg">
+        <CategoryInfoCard className="col-span-10 md:col-span-6">
           <CategoryInformation
             name={category.name}
             description={category.description}
             slug={slug}
             className='mb-10'/>
-        </div>
+        </CategoryInfoCard>
 
-        <div className="col-span-10 md:col-span-4 bg-gray-900 p-4 rounded-lg">
+        <CategoryInfoCard className="col-span-10 md:col-span-4">
           <DifficultyText className="mb-6 float-end" difficulty={difficulty}/>
           <HorizontalSlider
             value={difficulty}
@@ -103,7 +109,7 @@ export const CategoryPage = (): JSX.Element => {
           />
 
           <ProblemGeneratorsConfiguration slug={slug ?? ''}/>
-        </div>
+        </CategoryInfoCard>
       </div>
       <Toaster/>
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
