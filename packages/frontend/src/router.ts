@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom'
-import { GlobalError } from './components/errors/global-error'
+import { GlobalError } from './pages/global-error'
 import { CategoryPage } from './pages/category'
 import { LoginPage } from './pages/login'
 import { loginLoader, authProtectedLoader, logoutLoader, authLayoutLoader } from './util/routing'

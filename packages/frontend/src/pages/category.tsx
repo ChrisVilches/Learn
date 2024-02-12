@@ -81,7 +81,25 @@ export const CategoryPage = (): JSX.Element => {
   }
 
   if (isLoading || isUndefined(difficulty) || isUndefined(category)) {
-    return <CategoryPageSkeleton/>
+    // TODO: Sadly helmet has to be added here as well, otherwise the title would
+    //       temporarily become something random. For example if there was an error before,
+    //       the title will, for a split second, become "Unexpected Error" or "category not found",
+    //       or whatever the error was.
+    //       There are probably other corner cases where the same thing happens.
+    //       The problem seems to happen when there's a loading guard that doesn't render the
+    //       full loaded page with the Helmet element.
+    //       How to reproduce: Open a category with incorrect slug, then open one with correct slug,
+    //                         and check the tab title.
+    //       I have already fixed (patched) it by adding the "Loading..." title below, but if you
+    //       remove that helmet element, the wrong title will appear.
+    return (
+      <>
+        <Helmet>
+          <title>{getFullTitle('Loading...')}</title>
+        </Helmet>
+        <CategoryPageSkeleton/>
+      </>
+    )
   }
 
   return (
@@ -108,7 +126,7 @@ export const CategoryPage = (): JSX.Element => {
             onChangeCommitted={onChangeCommittedDifficulty}
           />
 
-          <ProblemGeneratorsConfiguration slug={slug ?? ''}/>
+          <ProblemGeneratorsConfiguration categorySlug={slug ?? ''}/>
         </CategoryInfoCard>
       </div>
       <Toaster/>
