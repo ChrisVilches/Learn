@@ -1,3 +1,4 @@
+import { booleanAlgebra } from './generators/boolean-algebra'
 import { integration } from './generators/integration'
 import { linearEquation } from './generators/linear-equation'
 import { matrixBasic } from './generators/matrix-basic'
@@ -20,5 +21,6 @@ export const problemGenerators = objectKebabKeys({
   integration,
   quadraticEquation,
   linearEquation,
-  singleVariableDerivative
+  singleVariableDerivative,
+  booleanAlgebra
 })

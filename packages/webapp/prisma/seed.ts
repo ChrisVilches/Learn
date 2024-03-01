@@ -73,6 +73,7 @@ async function main(): Promise<void> {
             help: 'Enter two solutions separated by a comma (if they are the same, just enter one).\n\n**Example 1** (Two real solutions):\n```\n3, 4\n```\n**Example 2** (Two complex solutions):\n```\n5 - i * sqrt(3/5), 5 + i * sqrt(3/5)\n```\n**Example 3** (One solution):\n```\n6\n```',
           },
           { name: 'linear-equation' },
+          { name: 'boolean-algebra' },
         ],
       },
     },
