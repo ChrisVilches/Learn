@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { TbMathIntegralX, TbMathPi, TbVector } from 'react-icons/tb'
 import { Spinner } from './loaders/spinner'
 import { TextSkeleton } from './loaders/text-skeleton'
-import { ComponentType } from 'react'
+import { type ComponentType } from 'react'
 import { isUndefined } from 'lodash'
 
 const iconMapping: Record<string, ComponentType> = {
