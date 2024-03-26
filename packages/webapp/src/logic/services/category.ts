@@ -9,7 +9,10 @@ import {
 import { sample, omitBy, isNil } from 'lodash';
 import { categoryPreferencesConfigSchema } from '../schemas/category-preferences';
 
-type ProblemGeneratorWithEnabled = Pick<ProblemGenerator, 'id' | 'name'> & {
+type ProblemGeneratorWithEnabled = Pick<
+  ProblemGenerator,
+  'id' | 'name' | 'freeInputHelp'
+> & {
   enabled: boolean;
 };
 
@@ -28,7 +31,7 @@ export class CategoryService {
   async fetchUserGenerators(
     user: User,
     category: Category,
-  ): Promise<ProblemGeneratorWithEnabled[]> {
+  ): Promise<Array<ProblemGeneratorWithEnabled>> {
     const all = await this.fetchCategoryGenerators(category);
 
     const enabled = await this.prisma.problemGenerator.findMany({
@@ -108,18 +111,16 @@ export class CategoryService {
     const generators = await this.fetchUserGenerators(user, category);
     const enabled = generators.filter((g) => g.enabled);
 
-    if (enabled.length > 0) {
-      return sample(enabled) as ProblemGeneratorWithEnabled;
-    } else {
-      return sample(generators) as ProblemGeneratorWithEnabled;
-    }
+    const result = enabled.length > 0 ? sample(enabled) : sample(generators);
+
+    return result!;
   }
 
   private async fetchCategoryGenerators(
     category: Category,
-  ): Promise<Array<Pick<ProblemGenerator, 'id' | 'name'>>> {
+  ): Promise<Array<Pick<ProblemGenerator, 'id' | 'name' | 'freeInputHelp'>>> {
     return await this.prisma.problemGenerator.findMany({
-      select: { id: true, name: true },
+      select: { id: true, name: true, freeInputHelp: true },
       where: { categoryId: category.id },
     });
   }
@@ -130,7 +131,7 @@ export class CategoryService {
     enable: boolean,
   ): Promise<ProblemGeneratorWithEnabled> {
     const generator = await this.prisma.problemGenerator.findUniqueOrThrow({
-      select: { id: true, name: true },
+      select: { id: true, name: true, freeInputHelp: true },
       where: { id: generatorId },
     });
 

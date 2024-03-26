@@ -30,12 +30,18 @@ async function main(): Promise<void> {
           {
             name: 'matrix-basic',
             help: 'Type the result matrix using only numbers, such as:\n```\n1 2 3\n4 5 6\n```',
+            freeInputHelp: '1 2 3 4\n5 6 7 8\n6 7 8 9',
           },
           {
             name: 'matrix-inversion',
             help: 'Example of allowed syntax:\n```\n(1/2) * [[1, 2, 3], [4, 5, 6]]\n```',
+            freeInputHelp: '(1/2) * [[1, 2, 3], [4, 5, 6]]',
           },
-          { name: 'matrix-rank', help: 'Enter the rank of the matrix' },
+          {
+            name: 'matrix-rank',
+            help: 'Enter the rank of the matrix',
+            freeInputHelp: 'Enter a single number',
+          },
         ],
       },
     },
@@ -51,8 +57,11 @@ async function main(): Promise<void> {
         'Calculus is the mathematical study of continuous change, in the same way that geometry is the study of shape, and algebra is the study of generalizations of arithmetic operations.',
       problemGenerators: {
         create: [
-          { name: 'integration' },
-          { name: 'single-variable-derivative' },
+          { name: 'integration', freeInputHelp: 'x^2 + x + C' },
+          {
+            name: 'single-variable-derivative',
+            freeInputHelp: '2*x - 4',
+          },
         ],
       },
     },
@@ -71,8 +80,12 @@ async function main(): Promise<void> {
           {
             name: 'quadratic-equation',
             help: 'Enter two solutions separated by a comma (if they are the same, just enter one).\n\n**Example 1** (Two real solutions):\n```\n3, 4\n```\n**Example 2** (Two complex solutions):\n```\n5 - i * sqrt(3/5), 5 + i * sqrt(3/5)\n```\n**Example 3** (One solution):\n```\n6\n```',
+            freeInputHelp: '5 - i * sqrt(3/5), 5 + i * sqrt(3/5)',
           },
-          { name: 'linear-equation' },
+          {
+            name: 'linear-equation',
+            freeInputHelp: 'Enter a single number',
+          },
           { name: 'boolean-algebra' },
         ],
       },

@@ -9,7 +9,8 @@ const problemSchema = z.object({
   choiceAnswers: z.array(z.object({
     label: z.string(),
     result: z.string()
-  }))
+  })),
+  freeInputHelp: z.string().default('')
 })
 
 export type Problem = z.infer<typeof problemSchema>

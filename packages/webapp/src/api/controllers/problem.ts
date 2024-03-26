@@ -39,7 +39,8 @@ export class ProblemController {
     @Query() { difficulty }: NewProblemRequestOptionsDto,
     @Param('category_slug', CategoryFromSlugPipe) category: Category,
   ): Promise<
-    Pick<GeneratedProblem, 'id' | 'tex' | 'difficulty'> & ProblemSolutionOptions
+    Pick<GeneratedProblem, 'id' | 'tex' | 'difficulty'> &
+      ProblemSolutionOptions & { freeInputHelp: string }
   > {
     const result = await this.problemService.generateProblem(
       user,
@@ -53,6 +54,7 @@ export class ProblemController {
       difficulty: result.difficulty,
       freeInput: result.freeInput,
       choiceAnswers: result.choiceAnswers,
+      freeInputHelp: result.freeInputHelp,
     };
   }
 

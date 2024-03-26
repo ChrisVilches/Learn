@@ -77,7 +77,7 @@ const ProblemSolverInner = ({ problem, fetchNextProblem, onProblemAccepted }: Pr
         </div>
       </div>
 
-      {problem.freeInput && <SolutionInput disabled={verdict !== null} className="my-4" onChange={setSolution} value={solution}/>}
+      {problem.freeInput && <SolutionInput placeholder={problem.freeInputHelp} disabled={verdict !== null} className="my-4" onChange={setSolution} value={solution}/>}
 
       <div className="flex place-items-center">
         <div className="flex space-x-4">

@@ -47,6 +47,7 @@ model ProblemGenerator {
   id                Int                        @id @default(autoincrement())
   name              String                     @unique
   help              String?
+  freeInputHelp     String?
   category          Category                   @relation(fields: [categoryId], references: [id])
   categoryId        Int
   users             UsersOnProblemGenerators[]

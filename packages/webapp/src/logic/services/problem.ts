@@ -25,11 +25,11 @@ export class ProblemService {
     user: User,
     difficulty: number,
     category: Category,
-  ): Promise<GeneratedProblem & ProblemSolutionOptions> {
-    const { id, name } = await this.categoryService.pickRandomSelectedGenerator(
-      user,
-      category,
-    );
+  ): Promise<
+    GeneratedProblem & ProblemSolutionOptions & { freeInputHelp: string }
+  > {
+    const { id, name, freeInputHelp } =
+      await this.categoryService.pickRandomSelectedGenerator(user, category);
 
     const gen = problemGenerators[name];
     const { tex, debugInformation, content } =
@@ -55,7 +55,11 @@ export class ProblemService {
       choiceAnswers: gen.choiceAnswers,
     };
 
-    return { ...generatedProblem, ...problemSolutionOptions };
+    return {
+      ...generatedProblem,
+      ...problemSolutionOptions,
+      freeInputHelp: freeInputHelp ?? '',
+    };
   }
 
   async getUserSolvedStats(userId: number, daysAgo: number) {
